@@ -1,38 +1,12 @@
 import { AxiosError, AxiosResponse } from "axios";
 import { useQuery } from "react-query";
-import { getAssets } from "../../api/services";
+import { getAssets } from "../../api/services/assets";
 import AssetsContext from "../../contexts/AssetsContext";
-
-interface IAsset {
-  assignedUserIds: [];
-  companyId: number;
-  healthHistory: [
-    {
-      status: string;
-      timestamp: string;
-    }
-  ];
-  healthscore: number;
-  id: number;
-  image: string;
-  metrics: {
-    lastUptimeAt: string;
-    totalCollectsUptime: number;
-    totalUptime: number;
-  };
-  model: string;
-  name: string;
-  sensors: [];
-  specifications: {
-    maxTemp: number;
-  };
-  status: string;
-  unitId: number;
-}
+import { IAssets } from "../../models/assets";
 
 export const AssetsProvider = ({ children }: any): JSX.Element => {
   const { data, error, isLoading, isError, isFetching } = useQuery<
-    AxiosResponse<IAsset[]>,
+    AxiosResponse<IAssets[]>,
     AxiosError
   >("assets", ({ signal }) => getAssets({ signal }));
 
