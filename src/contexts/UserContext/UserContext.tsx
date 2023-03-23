@@ -1,25 +1,9 @@
-import { AxiosError, AxiosResponse } from "axios";
 import { createContext, useContext } from "react";
+import { IUsersContext } from "../../models/users";
 
-interface IUser {
-  companyId: number;
-  email: string;
-  id: number;
-  name: string;
-  unitId: number;
-}
+export const UserContext = createContext<IUsersContext | undefined>(undefined);
 
-interface IUserContext {
-  data: AxiosResponse<IUser[]> | undefined;
-  error: AxiosError | null;
-  isLoading: boolean;
-  isError: boolean;
-  isFetching: boolean;
-}
-
-export const UserContext = createContext<IUserContext | undefined>(undefined);
-
-export const useUserContext = (): IUserContext => {
+export const useUserContext = (): IUsersContext => {
   const context = useContext(UserContext);
   if (!context) {
     throw new Error(

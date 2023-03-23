@@ -1,19 +1,12 @@
 import { AxiosError, AxiosResponse } from "axios";
 import { useQuery } from "react-query";
-import { getUsers } from "../../api/services";
+import { getUsers } from "../../api/services/users";
 import UserContext from "../../contexts/UserContext";
-
-interface IUser {
-  companyId: number;
-  email: string;
-  id: number;
-  name: string;
-  unitId: number;
-}
+import { IUsers } from "../../models/users";
 
 export const UserProvider = ({ children }: any): JSX.Element => {
   const { data, error, isLoading, isError, isFetching } = useQuery<
-    AxiosResponse<IUser[]>,
+    AxiosResponse<IUsers[]>,
     AxiosError
   >("users", ({ signal }) => getUsers({ signal }));
 
