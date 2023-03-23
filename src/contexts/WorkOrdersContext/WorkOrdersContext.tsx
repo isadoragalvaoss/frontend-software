@@ -1,28 +1,5 @@
-import { AxiosError, AxiosResponse } from "axios";
 import { createContext, useContext } from "react";
-
-interface ICheckList {
-  completed: boolean;
-  task: string;
-}
-interface IWorkOrders {
-  assetId: number;
-  assignedUserIds: [];
-  checklist: ICheckList[];
-  description: string;
-  id: 1;
-  priority: string;
-  status: string;
-  title: string;
-}
-
-interface IWorkOrdersContext {
-  data: AxiosResponse<IWorkOrders[]> | undefined;
-  error: AxiosError | null;
-  isLoading: boolean;
-  isError: boolean;
-  isFetching: boolean;
-}
+import { IWorkOrdersContext } from "../../models/workorders";
 
 export const WorkOrdersContext = createContext<IWorkOrdersContext | undefined>(
   undefined

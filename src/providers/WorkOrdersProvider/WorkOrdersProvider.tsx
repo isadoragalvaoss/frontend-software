@@ -1,28 +1,14 @@
 import { AxiosError, AxiosResponse } from "axios";
 import { useQuery } from "react-query";
-import { getWorkOrders } from "../../api/services";
+import { getWorkOrders } from "../../api/services/workorders";
 import WorkOrdersContext from "../../contexts/WorkOrdersContext";
-
-interface ICheckList {
-  completed: boolean;
-  task: string;
-}
-interface IWorkOrders {
-  assetId: number;
-  assignedUserIds: [];
-  checklist: ICheckList[];
-  description: string;
-  id: 1;
-  priority: string;
-  status: string;
-  title: string;
-}
+import { IWorkOrders } from "../../models/workorders";
 
 export const WorkOrdersProvider = ({ children }: any): JSX.Element => {
   const { data, error, isLoading, isError, isFetching } = useQuery<
     AxiosResponse<IWorkOrders[]>,
     AxiosError
-  >("WorkOrders", ({ signal }) => getWorkOrders({ signal }));
+  >("workOrders", ({ signal }) => getWorkOrders({ signal }));
 
   const contextValue = {
     data,
