@@ -35,10 +35,10 @@ const Assets = (): JSX.Element => {
             {currentData.map((item) => (
               <Card title={item.name} bordered={false} key={item.id}>
                 <Row>
-                  <Col key={item.id} span={8}>
+                  <Col key={item.id} lg={8} xs={24}>
                     <Image src={item.image} width={200} />
                   </Col>
-                  <Col key={item.id} span={16}>
+                  <Col key={item.id} lg={16} xs={24}>
                     <Descriptions bordered>
                       <Descriptions.Item label="Model">
                         {item.model}

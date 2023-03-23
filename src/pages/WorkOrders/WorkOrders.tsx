@@ -80,6 +80,7 @@ export const WorkOrders = (): JSX.Element => {
           columns={columns}
           pagination={{ pageSize: 10 }}
           title={() => <Title level={2}>Work Orders</Title>}
+          scroll={{ x: "min-content" }}
         />
         <CheckListModal
           isModalOpen={isCheckListOpen}

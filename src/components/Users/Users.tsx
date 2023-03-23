@@ -105,7 +105,6 @@ const Users = (): JSX.Element => {
                 </Button>
               </div>
             }
-            style={{ height: "75vh" }}
           >
             <List
               className="demo-loadmore-list"
@@ -116,13 +115,12 @@ const Users = (): JSX.Element => {
                   : dataUser?.data.slice(start, end)
               }
               pagination={{
-                align: "center",
-                position: "bottom",
                 current: currentPage,
                 pageSize: itemsPerPage,
                 total: hasDataTotal ? dataTotal.length : dataUser?.data.length,
                 onChange: (page: number) => setCurrentPage(page),
               }}
+              style={{ overflow: "auto" }}
               renderItem={(item: IUsers) => (
                 <List.Item
                   actions={[

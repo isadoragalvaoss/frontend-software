@@ -26,7 +26,7 @@ const Dashboard = (): JSX.Element => {
   return (
     <div>
       <Row gutter={[16, 16]} style={{ marginBottom: "15px" }}>
-        <Col span={6}>
+        <Col lg={6} xs={24}>
           <Card bordered={false}>
             <Statistic
               title="Assets average health"
@@ -38,7 +38,7 @@ const Dashboard = (): JSX.Element => {
             />
           </Card>
         </Col>
-        <Col span={6}>
+        <Col lg={6} xs={24}>
           <Card bordered={false}>
             <Statistic
               title="Total Assets"
@@ -47,7 +47,7 @@ const Dashboard = (): JSX.Element => {
             />
           </Card>
         </Col>
-        <Col span={6}>
+        <Col lg={6} xs={24}>
           <Card bordered={false}>
             <Statistic
               title="Total WorkOrders"
@@ -56,7 +56,7 @@ const Dashboard = (): JSX.Element => {
             />
           </Card>
         </Col>
-        <Col span={6}>
+        <Col lg={6} xs={24}>
           {UnitsData?.data && (
             <Card bordered={false}>
               <Statistic
@@ -69,13 +69,13 @@ const Dashboard = (): JSX.Element => {
         </Col>
       </Row>
       <Row gutter={[16, 16]}>
-        <Col span={16}>
+        <Col lg={16} xs={24}>
           <Card style={{ width: "100%" }}>
             {AssetsData?.data && <LineChart data={AssetsData?.data} />}
           </Card>
         </Col>
-        <Col span={8}>
-          <Card style={{ width: "100%" }}>
+        <Col lg={8} xs={24}>
+          <Card style={{ width: "100%", overflowX: "scroll" }}>
             {WorkOrdersData?.data && <PieChart data={WorkOrdersData?.data} />}
           </Card>
         </Col>
