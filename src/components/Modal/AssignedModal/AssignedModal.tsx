@@ -1,5 +1,5 @@
 import { List, Modal } from "antd";
-import { useUserContext } from "../../../contexts/UserContext/UserContext";
+import { useUserContext } from "../../../contexts/UserContext";
 
 interface IAssignedModal {
   isModalOpen: boolean;

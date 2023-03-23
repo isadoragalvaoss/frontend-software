@@ -13,4 +13,4 @@ export const useUserContext = (): IUsersContext => {
   return context;
 };
 
-export default UserContext;
+export default { UserContext, useUserContext };

@@ -8,7 +8,7 @@ import { useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { useLocation, useNavigate } from "react-router-dom";
 import Logo from "../../assets/tractian-logo.png";
-import { useCompaniesContext } from "../../contexts/CompaniesContext/CompaniesContext";
+import { useCompaniesContext } from "../../contexts/CompaniesContext";
 import { selectedRoutes } from "../../utils";
 import {
   AvatarContainer,

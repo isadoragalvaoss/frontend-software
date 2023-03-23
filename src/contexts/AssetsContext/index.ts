@@ -1,1 +1,1 @@
-export { default } from "./AssetsContext";
+export { AssetsContext, useAssetsContext } from "./AssetsContext";

@@ -15,4 +15,4 @@ export const useCompaniesContext = (): ICompaniesContext => {
   return context;
 };
 
-export default CompaniesContext;
+export default { CompaniesContext, useCompaniesContext };

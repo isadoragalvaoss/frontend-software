@@ -2,9 +2,9 @@ import { ArrowUpOutlined } from "@ant-design/icons";
 import { Card, Col, Row, Statistic } from "antd";
 import LineChart from "../../components/Chart/LineChart";
 import PieChart from "../../components/Chart/PieChart";
-import { useAssetsContext } from "../../contexts/AssetsContext/AssetsContext";
-import { useUnitsContext } from "../../contexts/UnitsContext/UnitsContext";
-import { useWorkOrdersContext } from "../../contexts/WorkOrdersContext/WorkOrdersContext";
+import { useAssetsContext } from "../../contexts/AssetsContext";
+import { useUnitsContext } from "../../contexts/UnitsContext";
+import { useWorkOrdersContext } from "../../contexts/WorkOrdersContext";
 import { IAssets } from "../../models/assets";
 
 const Dashboard = (): JSX.Element => {

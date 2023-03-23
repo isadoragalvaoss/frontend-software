@@ -1,7 +1,7 @@
 import { AxiosError, AxiosResponse } from "axios";
 import { useQuery } from "react-query";
 import { getUnits } from "../../api/services/units";
-import UnitsContext from "../../contexts/UnitsContext";
+import { UnitsContext } from "../../contexts/UnitsContext";
 import { IUnits } from "../../models/units";
 
 export const UnitsProvider = ({ children }: any): JSX.Element => {

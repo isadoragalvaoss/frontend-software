@@ -13,4 +13,4 @@ export const useUnitsContext = (): IUnitsContext => {
   return context;
 };
 
-export default UnitsContext;
+export default { UnitsContext, useUnitsContext };

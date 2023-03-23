@@ -1,7 +1,7 @@
 import { AxiosError, AxiosResponse } from "axios";
 import { useQuery } from "react-query";
 import { getUsers } from "../../api/services/users";
-import UserContext from "../../contexts/UserContext";
+import { UserContext } from "../../contexts/UserContext";
 import { IUsers } from "../../models/users";
 
 export const UserProvider = ({ children }: any): JSX.Element => {

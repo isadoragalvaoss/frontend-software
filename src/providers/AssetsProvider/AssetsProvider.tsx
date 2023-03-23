@@ -1,7 +1,7 @@
 import { AxiosError, AxiosResponse } from "axios";
 import { useQuery } from "react-query";
 import { getAssets } from "../../api/services/assets";
-import AssetsContext from "../../contexts/AssetsContext";
+import { AssetsContext } from "../../contexts/AssetsContext";
 import { IAssets } from "../../models/assets";
 
 export const AssetsProvider = ({ children }: any): JSX.Element => {

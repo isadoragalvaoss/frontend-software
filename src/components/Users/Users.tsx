@@ -2,7 +2,7 @@ import { Button, Card, List, Skeleton, Typography } from "antd";
 import { useState } from "react";
 import { useMutation } from "react-query";
 import { addUser, deleteUser, updateUser } from "../../api/services/users";
-import { useUserContext } from "../../contexts/UserContext/UserContext";
+import { useUserContext } from "../../contexts/UserContext";
 import { CreateUser, DeleteUser, IUsers, UpdateUser } from "../../models/users";
 import FormModal from "../Modal/FormModal";
 

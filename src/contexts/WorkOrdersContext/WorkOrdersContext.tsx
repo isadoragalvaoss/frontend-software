@@ -15,4 +15,4 @@ export const useWorkOrdersContext = (): IWorkOrdersContext => {
   return context;
 };
 
-export default WorkOrdersContext;
+export default { WorkOrdersContext, useWorkOrdersContext };

@@ -15,4 +15,4 @@ export const useAssetsContext = (): IAssetsContext => {
   return context;
 };
 
-export default AssetsContext;
+export default { AssetsContext, useAssetsContext };

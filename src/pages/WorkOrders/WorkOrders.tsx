@@ -2,7 +2,7 @@ import { Button, Col, Row, Space, Table, Tag, Typography } from "antd";
 import { useState } from "react";
 import AssignedModal from "../../components/Modal/AssignedModal";
 import CheckListModal from "../../components/Modal/CheckListModal";
-import { useWorkOrdersContext } from "../../contexts/WorkOrdersContext/WorkOrdersContext";
+import { useWorkOrdersContext } from "../../contexts/WorkOrdersContext";
 import { IWorkOrders } from "../../models/workorders";
 
 export const WorkOrders = (): JSX.Element => {

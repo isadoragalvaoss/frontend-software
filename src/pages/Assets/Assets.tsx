@@ -1,7 +1,7 @@
 import { Badge, Card, Col, Descriptions, Image, Pagination, Row } from "antd";
 import { useState } from "react";
 import { useQueryClient } from "react-query";
-import { useAssetsContext } from "../../contexts/AssetsContext/AssetsContext";
+import { useAssetsContext } from "../../contexts/AssetsContext";
 
 const PAGE_SIZE = 1;
 const Assets = (): JSX.Element => {

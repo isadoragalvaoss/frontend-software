@@ -1,1 +1,1 @@
-export { default } from "./CompaniesContext";
+export { CompaniesContext, useCompaniesContext } from "./CompaniesContext";

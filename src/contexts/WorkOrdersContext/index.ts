@@ -1,1 +1,1 @@
-export { default } from "./WorkOrdersContext";
+export { useWorkOrdersContext, WorkOrdersContext } from "./WorkOrdersContext";
