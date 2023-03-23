@@ -1,6 +1,20 @@
-import { DatabaseOutlined, SettingOutlined } from "@ant-design/icons";
-import { Button, Layout, Menu, Result, Typography } from "antd";
+import {
+  DatabaseOutlined,
+  SettingOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
+import {
+  Avatar,
+  Button,
+  Col,
+  Layout,
+  Menu,
+  Result,
+  Row,
+  Typography,
+} from "antd";
 import { useState } from "react";
+import { useMediaQuery } from "react-responsive";
 import { useLocation, useNavigate } from "react-router-dom";
 import Logo from "../../assets/tractian-logo.png";
 import { useCompaniesContext } from "../../contexts/CompaniesContext/CompaniesContext";
@@ -23,15 +37,47 @@ export const Main = (): JSX.Element => {
   };
 
   const { Title } = Typography;
+  const [menuOpen, setMenuOpen] = useState(true);
+  const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Sider collapsible>
+        {CompanyData?.data && (
+          <Row
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: "15px",
+            }}
+          >
+            <Col span={18}>
+              {menuOpen && (
+                <Title level={5} style={{ color: "#fff", margin: 0 }}>
+                  {CompanyData.data[0].name}
+                </Title>
+              )}
+            </Col>
+            <Col span={menuOpen ? 6 : 24}>
+              <Avatar
+                size={40}
+                icon={<UserOutlined />}
+                style={{ backgroundColor: "gray" }}
+              />
+            </Col>
+          </Row>
+        )}
         <Menu
           theme="dark"
           selectedKeys={[selectedRoute]}
-          onClick={({ key }) => handleRouteClick(key)}
-          style={{ marginTop: "64px" }}
+          onClick={({ key }) => {
+            handleRouteClick(key);
+          }}
+          style={{ marginTop: "30px" }}
+          onOpenChange={() => {
+            setMenuOpen(!menuOpen);
+          }}
         >
           <Menu.Item key="/dashboard" icon={<DatabaseOutlined />}>
             Dashboard
@@ -51,18 +97,12 @@ export const Main = (): JSX.Element => {
         <Header
           className="site-layout-background"
           style={{
-            padding: 0,
             display: "flex",
-            alignItems: "center",
             justifyContent: "center",
+            alignItems: "center",
           }}
         >
-          <img src={Logo} width={200} />
-          {CompanyData?.data && (
-            <Title level={5} type="secondary">
-              {CompanyData.data[0].name}
-            </Title>
-          )}
+          <img src={Logo} width={isMobile ? 100 : 200} />
         </Header>
         <Content style={{ margin: "16px" }}>
           <div
