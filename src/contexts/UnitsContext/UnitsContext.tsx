@@ -1,19 +1,5 @@
-import { AxiosError, AxiosResponse } from "axios";
 import { createContext, useContext } from "react";
-
-interface IUnits {
-  companyId: number;
-  id: number;
-  name: string;
-}
-
-interface IUnitsContext {
-  data: AxiosResponse<IUnits[]> | undefined;
-  error: AxiosError | null;
-  isLoading: boolean;
-  isError: boolean;
-  isFetching: boolean;
-}
+import { IUnitsContext } from "../../models/units";
 
 export const UnitsContext = createContext<IUnitsContext | undefined>(undefined);
 

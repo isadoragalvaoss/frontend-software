@@ -1,13 +1,8 @@
 import { AxiosError, AxiosResponse } from "axios";
 import { useQuery } from "react-query";
-import { getUnits } from "../../api/services";
+import { getUnits } from "../../api/services/units";
 import UnitsContext from "../../contexts/UnitsContext";
-
-interface IUnits {
-  companyId: number;
-  id: number;
-  name: string;
-}
+import { IUnits } from "../../models/units";
 
 export const UnitsProvider = ({ children }: any): JSX.Element => {
   const { data, error, isLoading, isError, isFetching } = useQuery<
