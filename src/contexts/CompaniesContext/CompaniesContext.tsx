@@ -1,18 +1,5 @@
-import { AxiosError, AxiosResponse } from "axios";
 import { createContext, useContext } from "react";
-
-interface ICompanies {
-  id: number;
-  name: string;
-}
-
-interface ICompaniesContext {
-  data: AxiosResponse<ICompanies[]> | undefined;
-  error: AxiosError | null;
-  isLoading: boolean;
-  isError: boolean;
-  isFetching: boolean;
-}
+import { ICompaniesContext } from "../../models/companies";
 
 export const CompaniesContext = createContext<ICompaniesContext | undefined>(
   undefined

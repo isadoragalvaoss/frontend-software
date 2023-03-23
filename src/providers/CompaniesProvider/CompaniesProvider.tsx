@@ -1,12 +1,8 @@
 import { AxiosError, AxiosResponse } from "axios";
 import { useQuery } from "react-query";
-import { getCompanies } from "../../api/services";
+import { getCompanies } from "../../api/services/companies";
 import CompaniesContext from "../../contexts/CompaniesContext";
-
-interface ICompanies {
-  id: number;
-  name: string;
-}
+import { ICompanies } from "../../models/companies";
 
 export const CompaniesProvider = ({ children }: any): JSX.Element => {
   const { data, error, isLoading, isError, isFetching } = useQuery<
