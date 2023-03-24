@@ -22,6 +22,8 @@ export interface IAssets {
   sensors: [];
   specifications: {
     maxTemp: number;
+    power?: number;
+    rpm?: number;
   };
   status: string;
   unitId: number;
@@ -43,6 +45,8 @@ export interface Asset {
   sensors: [];
   specifications: {
     maxTemp: number;
+    power?: number;
+    rpm?: number;
   };
   status: string;
   unitId: number;
