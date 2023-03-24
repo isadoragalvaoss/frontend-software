@@ -4,7 +4,7 @@ import { useMutation } from "react-query";
 import { addUser, deleteUser, updateUser } from "../../api/services/users";
 import { useUserContext } from "../../contexts/UserContext";
 import { CreateUser, DeleteUser, IUsers, UpdateUser } from "../../models/users";
-import FormModal from "../Modal/FormModal";
+import FormModal from "../Modal/FormModal/FormUserModal";
 
 const Users = (): JSX.Element => {
   const {

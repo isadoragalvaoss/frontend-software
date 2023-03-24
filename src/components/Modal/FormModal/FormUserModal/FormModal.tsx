@@ -1,8 +1,11 @@
-import { Button, Form, Input, Modal } from "antd";
+import { Button, Form, Input, Modal, Select } from "antd";
 import { AxiosResponse } from "axios";
 import { useEffect, useState } from "react";
 import { UseMutateFunction } from "react-query";
-import { CreateUser, IUsers, UpdateUser } from "../../../models/users";
+import { useCompaniesContext } from "../../../../contexts/CompaniesContext";
+import { useUnitsContext } from "../../../../contexts/UnitsContext";
+import { CreateUser, IUsers, UpdateUser } from "../../../../models/users";
+const { Option } = Select;
 
 interface ModalProps {
   selectedItem: IUsers | null;
@@ -66,6 +69,52 @@ export const FormModal = ({
     });
   }, [form, selectedItem]);
 
+  const {
+    data: companiesData,
+    error: companiesError,
+    isLoading: companiesLoading,
+    isError: companiesIsError,
+    isFetching: companiesIsFetching,
+  } = useCompaniesContext();
+
+  function renderCompanies() {
+    if (companiesIsError && companiesError) {
+      return <div>Error</div>;
+    }
+    if (companiesLoading || companiesIsFetching || !companiesData) {
+      return <div>Loading...</div>;
+    } else {
+      return companiesData.data.map((item) => (
+        <Option value={item.id} key={item.id}>
+          {item.name}
+        </Option>
+      ));
+    }
+  }
+
+  const {
+    data: unitsData,
+    error: unitsError,
+    isLoading: unitsLoading,
+    isError: unitsIsError,
+    isFetching: unitsIsFetching,
+  } = useUnitsContext();
+
+  function renderUnits() {
+    if (unitsIsError && unitsError) {
+      return <div>Error</div>;
+    }
+    if (unitsLoading || unitsIsFetching || !unitsData) {
+      return <div>Loading...</div>;
+    } else {
+      return unitsData.data.map((item) => (
+        <Option value={item.id} key={item.id}>
+          {item.name}
+        </Option>
+      ));
+    }
+  }
+
   return (
     <Modal
       title="Create User"
@@ -89,14 +138,14 @@ export const FormModal = ({
           label="Company ID"
           rules={[{ required: true }]}
         >
-          <Input type="number" />
+          {companiesData && <Select>{renderCompanies()}</Select>}
         </Form.Item>
         <Form.Item name="unitId" label="Unit ID" rules={[{ required: true }]}>
-          <Input type="number" />
+          {unitsData && <Select>{renderUnits()}</Select>}
         </Form.Item>
         <Form.Item>
           <Button onClick={handleCreate} loading={loading} type="primary">
-            Create
+            {selectedItem ? "Edit" : "Create"}
           </Button>
         </Form.Item>
       </Form>
