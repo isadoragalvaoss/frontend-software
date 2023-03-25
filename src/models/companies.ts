@@ -1,4 +1,5 @@
 import { AxiosError, AxiosResponse } from "axios";
+import { UseMutateFunction } from "react-query";
 
 export interface ICompanies {
   id: number;
@@ -33,4 +34,23 @@ export interface ICompaniesContext {
   isLoading: boolean;
   isError: boolean;
   isFetching: boolean;
+}
+
+export interface CompanyModal {
+  selectedItem: ICompanies | null;
+  addCompany: UseMutateFunction<
+    AxiosResponse<any, any>,
+    unknown,
+    CreateCompany,
+    unknown
+  >;
+  updateCompany: UseMutateFunction<
+    AxiosResponse<any, any>,
+    unknown,
+    UpdateCompany,
+    unknown
+  >;
+  setIsModalVisible: (prevState: boolean) => void;
+  onCancel: () => void;
+  isModalVisible: boolean;
 }
