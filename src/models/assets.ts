@@ -1,4 +1,5 @@
 import { AxiosError, AxiosResponse } from "axios";
+import { UseMutateFunction } from "react-query";
 
 export interface HealthHistory {
   status: string;
@@ -76,4 +77,39 @@ export interface IAssetsContext {
   isLoading: boolean;
   isError: boolean;
   isFetching: boolean;
+}
+
+export interface AssetModal {
+  selectedItem: IAssets | null;
+  addAsset: UseMutateFunction<
+    AxiosResponse<any, any>,
+    unknown,
+    CreateAsset,
+    unknown
+  >;
+  updateAsset: UseMutateFunction<
+    AxiosResponse<any, any>,
+    unknown,
+    UpdateAsset,
+    unknown
+  >;
+  setIsModalVisible: (prevState: boolean) => void;
+  onCancel: () => void;
+  isModalVisible: boolean;
+}
+
+export interface Specifics {
+  specifications: {
+    maxTemp: number;
+    power?: number | undefined;
+    rpm?: number | undefined;
+  };
+}
+
+export interface Metrics {
+  metrics: {
+    totalCollectsUptime: number;
+    totalUptime: number;
+    lastUptimeAt: string;
+  };
 }
