@@ -1,5 +1,6 @@
 import { ArrowUpOutlined } from "@ant-design/icons";
 import { Col, Statistic, Tooltip } from "antd";
+import { DARK_BLUE, GREEN } from "../../consts/colors";
 import { IAssets } from "../../models/assets";
 import { IUnits } from "../../models/units";
 import { IWorkOrders } from "../../models/workorders";
@@ -43,13 +44,13 @@ export const StatisticCard = ({
           placement="bottom"
           title={getTooltip}
           arrow={false}
-          color="#001529"
+          color={DARK_BLUE}
         >
           <Statistic
             title={title}
             value={value}
             precision={assetsAverage ? 2 : 0}
-            valueStyle={{ color: assetsAverage ? "#3f8600" : "#001529" }}
+            valueStyle={{ color: assetsAverage ? GREEN : DARK_BLUE }}
             prefix={assetsAverage && <ArrowUpOutlined />}
             suffix={assetsAverage && "%"}
           />

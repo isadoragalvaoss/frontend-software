@@ -1,4 +1,5 @@
 import { Modal, Timeline } from "antd";
+import { GRAY, LIGHT_GREEN } from "../../../consts/colors";
 import { ICheckList } from "../../../models/workorders";
 
 interface ICheckListProps {
@@ -25,7 +26,7 @@ export const CheckListModal = ({
           checkList.map((item, index) => (
             <Timeline.Item
               key={index}
-              color={item.completed ? "green" : "gray"}
+              color={item.completed ? LIGHT_GREEN : GRAY}
             >
               {item.task}
             </Timeline.Item>

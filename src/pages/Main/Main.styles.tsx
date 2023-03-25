@@ -1,5 +1,6 @@
 import { Avatar, Layout, Menu, Row, Typography } from "antd";
 import styled from "styled-components";
+import { GRAY, WHITE } from "../../consts/colors";
 const { Title } = Typography;
 const { Header, Content } = Layout;
 
@@ -13,12 +14,12 @@ export const CompanyDataContainer = styled(Row)`
   margin-top: 15px;
 `;
 export const TitleContainer = styled(Title)`
-  color: #fff !important;
+  color: ${WHITE} !important;
   margin: 0 !important;
 `;
 
 export const AvatarContainer = styled(Avatar)`
-  background-color: gray;
+  background-color: ${GRAY};
 `;
 
 export const MenuContainer = styled(Menu)`
