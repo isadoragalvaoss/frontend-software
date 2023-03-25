@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { UseMutateFunction } from "react-query";
 import { useAssetsContext } from "../../../../contexts/AssetsContext";
 import { useUserContext } from "../../../../contexts/UserContext";
+import { IAssets } from "../../../../models/assets";
+import { IUsers } from "../../../../models/users";
 import {
   CreateWorkOrder,
   IWorkOrders,
@@ -78,51 +80,8 @@ export const FormWorkOrdersModal = ({
     });
   }, [form, selectedItem]);
 
-  const {
-    data: assetsData,
-    error: assetsError,
-    isLoading: assetsLoading,
-    isError: assetsIsError,
-    isFetching: assetsIsFetching,
-  } = useAssetsContext();
-
-  function renderAssets() {
-    if (assetsIsError && assetsError) {
-      return <div>Error</div>;
-    }
-    if (assetsLoading || assetsIsFetching || !assetsData) {
-      return <div>Loading...</div>;
-    } else {
-      return assetsData.data.map((item) => (
-        <Option value={item.id} key={item.id}>
-          {item.name}
-        </Option>
-      ));
-    }
-  }
-
-  const {
-    data: usersData,
-    error: usersError,
-    isLoading: usersLoading,
-    isError: usersIsError,
-    isFetching: usersIsFetching,
-  } = useUserContext();
-
-  function renderAssignedUsers() {
-    if (usersIsError && usersError) {
-      return <div>Error</div>;
-    }
-    if (usersLoading || usersIsFetching || !usersData) {
-      return <div>Loading...</div>;
-    } else {
-      return usersData.data.map((item) => (
-        <Option value={item.id} key={item.id}>
-          {item.name}
-        </Option>
-      ));
-    }
-  }
+  const assets = useAssetsContext();
+  const users = useUserContext();
 
   return (
     <Modal
@@ -133,10 +92,24 @@ export const FormWorkOrdersModal = ({
     >
       <Form form={form} layout="horizontal">
         <Form.Item label="Asset" name="assetId">
-          {assetsData && <Select>{renderAssets()}</Select>}
+          <Select>
+            {assets?.data &&
+              assets.data.data.map((item: IAssets) => (
+                <Option value={item.id} key={item.id}>
+                  {item.name}
+                </Option>
+              ))}
+          </Select>
         </Form.Item>
         <Form.Item label="Assigned Users" name="assignedUserIds">
-          <Select mode="multiple">{renderAssignedUsers()}</Select>
+          <Select mode="multiple">
+            {users?.data &&
+              users.data.data.map((item: IUsers) => (
+                <Option value={item.id} key={item.id}>
+                  {item.name}
+                </Option>
+              ))}
+          </Select>
         </Form.Item>
         <Form.List name="checklist">
           {(fields, { add, remove }) => (
