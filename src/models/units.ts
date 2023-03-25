@@ -1,4 +1,5 @@
 import { AxiosError, AxiosResponse } from "axios";
+import { UseMutateFunction } from "react-query";
 
 export interface IUnits {
   companyId: number;
@@ -35,4 +36,23 @@ export interface IUnitsContext {
   isLoading: boolean;
   isError: boolean;
   isFetching: boolean;
+}
+
+export interface UnitModal {
+  selectedItem: IUnits | null;
+  addUnit: UseMutateFunction<
+    AxiosResponse<any, any>,
+    unknown,
+    CreateUnit,
+    unknown
+  >;
+  updateUnit: UseMutateFunction<
+    AxiosResponse<any, any>,
+    unknown,
+    UpdateUnit,
+    unknown
+  >;
+  setIsModalVisible: (prevState: boolean) => void;
+  onCancel: () => void;
+  isModalVisible: boolean;
 }
