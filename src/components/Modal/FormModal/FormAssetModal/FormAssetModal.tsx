@@ -106,7 +106,7 @@ export const FormAssetModal = ({
   }, [form, selectedItem]);
 
   const users = useUserContext();
-  const units = useUnitsContext();
+  const { newUnitData } = useUnitsContext();
   const companies = useCompaniesContext();
 
   const status = [
@@ -221,8 +221,8 @@ export const FormAssetModal = ({
           </SelectItem>
           <SelectItem label="Unit" name="unitId">
             <Select>
-              {units?.data &&
-                units.data.data.map((item: IUnits) => {
+              {newUnitData &&
+                newUnitData.map((item: IUnits) => {
                   return (
                     <Option value={item.id} key={item.id}>
                       {item.name}

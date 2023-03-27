@@ -1,4 +1,6 @@
-import { Card, Col, Row } from "antd";
+import { Col, Row } from "antd";
+import Companies from "../../components/Companies";
+import Units from "../../components/Units";
 import Users from "../../components/Users";
 
 const Manage = (): JSX.Element => {
@@ -10,14 +12,10 @@ const Manage = (): JSX.Element => {
       <Col lg={8} xs={24}>
         <Row gutter={[16, 16]} style={{ height: "100%" }}>
           <Col span={24}>
-            <Card title="Companies" style={{ height: "50%" }}>
-              Conteúdo do card 1
-            </Card>
+            <Companies />
           </Col>
           <Col span={24}>
-            <Card title="Units" style={{ height: "50%" }}>
-              Conteúdo do card 2
-            </Card>
+            <Units />
           </Col>
         </Row>
       </Col>

@@ -8,6 +8,7 @@ import {
   Progress,
   Row,
   Tag,
+  Tooltip,
 } from "antd";
 import { useState } from "react";
 import { useMutation } from "react-query";
@@ -16,6 +17,7 @@ import AssignedModal from "../../components/Modal/AssignedModal";
 import FormAssetModal from "../../components/Modal/FormModal/FormAssetModal";
 import { DARK_BLUE } from "../../consts/colors";
 import { useAssetsContext } from "../../contexts/AssetsContext";
+import { useUnitsContext } from "../../contexts/UnitsContext";
 import {
   CreateAsset,
   DeleteAsset,
@@ -143,6 +145,17 @@ const Assets = (): JSX.Element => {
     }
   );
 
+  const { newUnitData } = useUnitsContext();
+  function findNameById(id: number) {
+    if (newUnitData)
+      for (let i = 0; i < newUnitData.length; i++) {
+        if (newUnitData[i].id === id) {
+          return newUnitData[i].name;
+        }
+      }
+    return null;
+  }
+
   function renderAssets() {
     if (isError && error) {
       return <div>Error</div>;
@@ -182,7 +195,14 @@ const Assets = (): JSX.Element => {
                           {item.sensors}
                         </Descriptions.Item>
                         <Descriptions.Item label="Unit">
-                          {item.unitId}
+                          <Tooltip
+                            placement="bottom"
+                            title={findNameById(item.unitId)}
+                            arrow={false}
+                            color={DARK_BLUE}
+                          >
+                            {item.unitId}
+                          </Tooltip>
                         </Descriptions.Item>
 
                         <Descriptions.Item label="Health Score">

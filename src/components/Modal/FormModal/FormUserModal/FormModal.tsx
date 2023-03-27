@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { UseMutateFunction } from "react-query";
 import { useCompaniesContext } from "../../../../contexts/CompaniesContext";
 import { useUnitsContext } from "../../../../contexts/UnitsContext";
+import { IUnits } from "../../../../models/units";
 import { CreateUser, IUsers, UpdateUser } from "../../../../models/users";
 const { Option } = Select;
 
@@ -91,29 +92,7 @@ export const FormModal = ({
       ));
     }
   }
-
-  const {
-    data: unitsData,
-    error: unitsError,
-    isLoading: unitsLoading,
-    isError: unitsIsError,
-    isFetching: unitsIsFetching,
-  } = useUnitsContext();
-
-  function renderUnits() {
-    if (unitsIsError && unitsError) {
-      return <div>Error</div>;
-    }
-    if (unitsLoading || unitsIsFetching || !unitsData) {
-      return <div>Loading...</div>;
-    } else {
-      return unitsData.data.map((item) => (
-        <Option value={item.id} key={item.id}>
-          {item.name}
-        </Option>
-      ));
-    }
-  }
+  const { newUnitData } = useUnitsContext();
 
   return (
     <Modal
@@ -141,7 +120,16 @@ export const FormModal = ({
           {companiesData && <Select>{renderCompanies()}</Select>}
         </Form.Item>
         <Form.Item name="unitId" label="Unit ID" rules={[{ required: true }]}>
-          {unitsData && <Select>{renderUnits()}</Select>}
+          <Select>
+            {newUnitData &&
+              newUnitData.map((item: IUnits) => {
+                return (
+                  <Option value={item.id} key={item.id}>
+                    {item.name}
+                  </Option>
+                );
+              })}
+          </Select>
         </Form.Item>
         <Form.Item>
           <Button onClick={handleCreate} loading={loading} type="primary">

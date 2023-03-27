@@ -36,6 +36,8 @@ export interface IUnitsContext {
   isLoading: boolean;
   isError: boolean;
   isFetching: boolean;
+  newUnitData: IUnits[] | undefined;
+  setData: (data: IUnits[]) => void;
 }
 
 export interface UnitModal {

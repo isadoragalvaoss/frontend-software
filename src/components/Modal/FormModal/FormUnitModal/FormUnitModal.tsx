@@ -1,6 +1,9 @@
-import { Button, Form, Input, Modal } from "antd";
+import { Button, Form, Input, Modal, Select } from "antd";
 import { useEffect, useState } from "react";
+import { useCompaniesContext } from "../../../../contexts/CompaniesContext";
+import { ICompanies } from "../../../../models/companies";
 import { UnitModal } from "../../../../models/units";
+const { Option } = Select;
 
 export const FormCompanyModal = ({
   addUnit,
@@ -39,8 +42,11 @@ export const FormCompanyModal = ({
   useEffect(() => {
     form.setFieldsValue({
       name: selectedItem?.name,
+      companyId: selectedItem?.companyId,
     });
   }, [form, selectedItem]);
+
+  const companies = useCompaniesContext();
 
   return (
     <Modal
@@ -52,6 +58,20 @@ export const FormCompanyModal = ({
       <Form form={form} layout="vertical">
         <Form.Item name="name" label="Name" rules={[{ required: true }]}>
           <Input />
+        </Form.Item>
+        <Form.Item
+          name="companyId"
+          label="Company ID"
+          rules={[{ required: true }]}
+        >
+          <Select>
+            {companies?.data &&
+              companies.data.data.map((item: ICompanies) => (
+                <Option value={item.id} key={item.id}>
+                  {item.name}
+                </Option>
+              ))}
+          </Select>
         </Form.Item>
         <Button onClick={handleCreate} loading={loading} type="primary">
           {selectedItem ? "Edit" : "Create"}
