@@ -13,7 +13,10 @@ import {
 } from "./Dashboard.styles";
 
 const Dashboard = (): JSX.Element => {
-  const { data: AssetsData } = useAssetsContext();
+  const { data: AssetsData, newAssetData } = useAssetsContext();
+  const assetData =
+    newAssetData && newAssetData?.length > 0 ? newAssetData : AssetsData?.data;
+
   const { data: WorkOrdersData, newWorkOrderData } = useWorkOrdersContext();
   const workOrderData =
     newWorkOrderData && newWorkOrderData?.length > 0
@@ -38,17 +41,21 @@ const Dashboard = (): JSX.Element => {
   return (
     <DashboardContainer>
       <StatisticCardsContainer gutter={[16, 16]}>
-        <StatisticCard
-          data={AssetsData?.data}
-          title="Assets average health"
-          value={healthAverage(AssetsData?.data)}
-          assetsAverage
-        />
-        <StatisticCard
-          data={AssetsData?.data}
-          title="Total Assets"
-          value={AssetsData?.data.length}
-        />
+        {assetData && (
+          <>
+            <StatisticCard
+              data={assetData}
+              title="Assets average health"
+              value={healthAverage(assetData)}
+              assetsAverage
+            />
+            <StatisticCard
+              data={assetData}
+              title="Total Assets"
+              value={assetData.length}
+            />
+          </>
+        )}
         {workOrderData && (
           <StatisticCard
             data={workOrderData}
@@ -68,7 +75,7 @@ const Dashboard = (): JSX.Element => {
       <Row gutter={[16, 16]}>
         <Col lg={16} xs={24}>
           <GraphicsCard>
-            {AssetsData?.data && <LineChart data={AssetsData?.data} />}
+            {assetData && <LineChart data={assetData} />}
           </GraphicsCard>
         </Col>
         <Col lg={8} xs={24}>

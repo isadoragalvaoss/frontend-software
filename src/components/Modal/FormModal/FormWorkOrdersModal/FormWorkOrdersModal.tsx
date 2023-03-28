@@ -55,7 +55,10 @@ export const FormWorkOrdersModal = ({
     });
   }, [form, selectedItem]);
 
-  const assets = useAssetsContext();
+  const { data: AssetsData, newAssetData } = useAssetsContext();
+  const assetData =
+    newAssetData && newAssetData?.length > 0 ? newAssetData : AssetsData?.data;
+
   const { newUserData, data: UsersData } = useUserContext();
   const userData =
     newUserData && newUserData?.length > 0 ? newUserData : UsersData?.data;
@@ -72,8 +75,8 @@ export const FormWorkOrdersModal = ({
         </Form.Item>
         <Form.Item rules={[{ required: true }]} label="Asset" name="assetId">
           <Select>
-            {assets?.data &&
-              assets.data.data.map((item: IAssets) => (
+            {assetData &&
+              assetData.map((item: IAssets) => (
                 <Option value={item.id} key={item.id}>
                   {item.name}
                 </Option>

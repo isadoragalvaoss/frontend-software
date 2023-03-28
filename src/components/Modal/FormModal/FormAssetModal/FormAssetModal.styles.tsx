@@ -6,8 +6,12 @@ export const SpaceHealthHistory = styled(Space)`
   margin-bottom: 8;
 `;
 
-export const SelectItem = styled(Form.Item)`
-  width: 150px;
+interface SelectedItemsProps {
+  large?: boolean;
+}
+
+export const SelectItem = styled(Form.Item)<SelectedItemsProps>`
+  width: ${(props) => (props.large ? "250px" : "150px")};
 `;
 
 export const ContainerFlex = styled.div`

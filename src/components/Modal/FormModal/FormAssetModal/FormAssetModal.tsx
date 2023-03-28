@@ -59,6 +59,9 @@ export const FormAssetModal = ({
         }
       );
       form.setFieldValue(`healthHistory`, updatedHealthHistory);
+
+      const today = new Date().toISOString();
+      form.setFieldValue(["metrics", "lastUptimeAt"], today);
       const values = await form.validateFields();
       if (!selectedItem) {
         addAsset({
@@ -124,32 +127,51 @@ export const FormAssetModal = ({
     { name: "In Downtime", id: "inDowntime" },
   ];
 
+  const model = [
+    { name: "Motor", id: "motor" },
+    { name: "Fan", id: "fan" },
+  ];
+
   return (
     <Modal
-      title="Create Company"
+      title="Create Asset"
       open={isModalVisible}
       onCancel={onCancel}
       footer={null}
-      width="50%"
+      width="70%"
     >
-      <Form form={form} layout="vertical">
-        <Form.Item name="name" label="Name">
+      <Form form={form} layout="horizontal" style={{ overflow: "auto" }}>
+        <Form.Item rules={[{ required: true }]} name="name" label="Name">
           <Input />
         </Form.Item>
 
-        <Form.Item name="image" label="Image Link">
+        <Form.Item rules={[{ required: true }]} name="image" label="Image Link">
           <Input />
         </Form.Item>
 
         <ContainerFlex>
-          <Form.Item name="model" label="Model">
-            <Input />
-          </Form.Item>
-          <Form.Item name={["sensors", 0]} label="sensors">
+          <SelectItem rules={[{ required: true }]} label="Model" name="model">
+            <Select>
+              {model.map((item) => (
+                <Option value={item.id} key={item.id}>
+                  {item.name}
+                </Option>
+              ))}
+            </Select>
+          </SelectItem>
+          <Form.Item
+            rules={[{ required: true }]}
+            name={["sensors", 0]}
+            label="Sensors"
+          >
             <Input />
           </Form.Item>
 
-          <Form.Item name="healthscore" label="Health Score">
+          <Form.Item
+            rules={[{ required: true }]}
+            name="healthscore"
+            label="Health Score"
+          >
             <InputNumber />
           </Form.Item>
         </ContainerFlex>
@@ -158,44 +180,57 @@ export const FormAssetModal = ({
           <Input.Group>
             <ContainerFlex>
               <Form.Item
+                rules={[{ required: true }]}
                 name={["specifications", "maxTemp"]}
                 label="Max Temperature"
               >
-                <InputNumber placeholder="Input 1" />
+                <InputNumber />
               </Form.Item>
-              <Form.Item name={["specifications", "rpm"]} label="RPM">
-                <InputNumber placeholder="Input 2" />
+              <Form.Item
+                rules={[{ required: true }]}
+                name={["specifications", "rpm"]}
+                label="RPM"
+              >
+                <InputNumber />
               </Form.Item>
-              <Form.Item name={["specifications", "power"]} label="Power">
-                <InputNumber placeholder="Input 3" />
+              <Form.Item
+                rules={[{ required: true }]}
+                name={["specifications", "power"]}
+                label="Power"
+              >
+                <InputNumber />
               </Form.Item>
             </ContainerFlex>
           </Input.Group>
         </Form.Item>
-        <Form.Item name="metrics" label="metrics">
+        <Form.Item name="metrics" label="Metrics">
           <Input.Group>
             <ContainerFlex>
               <Form.Item
-                name={["metrics", "lastUptimeAt"]}
-                label="Last Uptime At"
-              >
-                <Input placeholder="Input 1" />
-              </Form.Item>
-              <Form.Item
+                rules={[{ required: true }]}
                 name={["metrics", "totalCollectsUptime"]}
                 label="Total Collects Uptime"
               >
-                <InputNumber placeholder="Input 2" />
+                <InputNumber />
               </Form.Item>
-              <Form.Item name={["metrics", "totalUptime"]} label="Total Uptime">
-                <InputNumber placeholder="Input 3" />
+              <Form.Item
+                rules={[{ required: true }]}
+                name={["metrics", "totalUptime"]}
+                label="Total Uptime"
+              >
+                <InputNumber />
               </Form.Item>
             </ContainerFlex>
           </Input.Group>
         </Form.Item>
 
         <ContainerFlex>
-          <SelectItem label="Assigned Users" name="assignedUserIds">
+          <SelectItem
+            rules={[{ required: true }]}
+            label="Assigned Users"
+            name="assignedUserIds"
+            large
+          >
             <Select mode="multiple">
               {userData &&
                 userData.map((item: IUsers) => (
@@ -205,7 +240,12 @@ export const FormAssetModal = ({
                 ))}
             </Select>
           </SelectItem>
-          <SelectItem label="Company" name="companyId">
+          <SelectItem
+            rules={[{ required: true }]}
+            label="Company"
+            name="companyId"
+            large
+          >
             <Select>
               {companyData &&
                 companyData.map((item) => (
@@ -217,7 +257,12 @@ export const FormAssetModal = ({
           </SelectItem>
         </ContainerFlex>
         <ContainerFlex>
-          <SelectItem label="Status" name="status">
+          <SelectItem
+            rules={[{ required: true }]}
+            label="Status"
+            name="status"
+            large
+          >
             <Select>
               {status.map((item) => (
                 <Option value={item.id} key={item.id}>
@@ -226,7 +271,12 @@ export const FormAssetModal = ({
               ))}
             </Select>
           </SelectItem>
-          <SelectItem label="Unit" name="unitId">
+          <SelectItem
+            rules={[{ required: true }]}
+            label="Unit"
+            name="unitId"
+            large
+          >
             <Select>
               {unitData &&
                 unitData.map((item: IUnits) => {
@@ -251,6 +301,7 @@ export const FormAssetModal = ({
                     {...field}
                     name={[field.name, "status"]}
                     key={`${field.key}-completed`}
+                    rules={[{ required: true }]}
                   >
                     <Select>
                       {status.map((item) => (
@@ -263,7 +314,7 @@ export const FormAssetModal = ({
                   <Form.Item
                     {...field}
                     name={[field.name, "timestamp"]}
-                    rules={[{ required: true, message: "Missing task" }]}
+                    rules={[{ required: true, message: "'task' is required" }]}
                     style={{ margin: 0 }}
                     key={`${field.key}-task`}
                   >

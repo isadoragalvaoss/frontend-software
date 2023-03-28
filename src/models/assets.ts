@@ -77,6 +77,8 @@ export interface IAssetsContext {
   isLoading: boolean;
   isError: boolean;
   isFetching: boolean;
+  newAssetData: IAssets[] | undefined;
+  setData: (data: IAssets[]) => void;
 }
 
 export interface AssetModal {
