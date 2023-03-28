@@ -24,14 +24,13 @@ const Units = (): JSX.Element => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedItem, setSelectedItem] = useState<IUnits | null>(null);
-  const hasNewUnitData = newUnitData && newUnitData?.length > 0;
+
   const itemsPerPage = 2;
   const start = (currentPage - 1) * itemsPerPage;
   const end = start + itemsPerPage;
   const paginationTotal = newUnitData && newUnitData.length;
-  const paginationDataList = newUnitData && newUnitData.slice(start, end);
+  const dataList = newUnitData && newUnitData.slice(start, end);
 
-  const dataList = paginationDataList;
   const pagination = {
     current: currentPage,
     pageSize: itemsPerPage,
@@ -82,7 +81,7 @@ const Units = (): JSX.Element => {
           name: variables.body.name,
           id: variables.id,
         };
-        if (hasNewUnitData) {
+        if (newUnitData) {
           setData(updateItemById(newUnitData, data));
           toast.success("Unit updated!");
         } else toast.error(`${error.message}`);
@@ -100,7 +99,7 @@ const Units = (): JSX.Element => {
         }
       },
       onError: (error: AxiosError, variables) => {
-        if (hasNewUnitData) {
+        if (newUnitData) {
           setData(removeItemById(newUnitData, variables));
           setCurrentPage(currentPage - 1);
           toast.success("Unit deleted!");
