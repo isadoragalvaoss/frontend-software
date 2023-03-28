@@ -1,4 +1,14 @@
-import { Button, Col, Row, Space, Table, Tag, Typography } from "antd";
+import {
+  Button,
+  Col,
+  Popconfirm,
+  Row,
+  Skeleton,
+  Space,
+  Table,
+  Tag,
+  Typography,
+} from "antd";
 import { useState } from "react";
 import { useMutation } from "react-query";
 import {
@@ -17,48 +27,56 @@ import {
   UpdateWorkOrder,
 } from "../../models/workorders";
 
+import { AxiosError } from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { TableTitle } from "./WorkOrders.styles";
+const { Title } = Typography;
+
 export const WorkOrders = (): JSX.Element => {
-  const { data: dataWorkOrders } = useWorkOrdersContext();
-  const { Title } = Typography;
+  const {
+    data: dataWorkOrder,
+    error,
+    isLoading,
+    isError,
+    isFetching,
+    setData,
+    newWorkOrderData,
+  } = useWorkOrdersContext();
 
   const [isCheckListOpen, setIsCheckListOpen] = useState(false);
   const [isAssignedOpen, setIsAssignedOpen] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [dataTotal, setDataTotal] = useState<IWorkOrders[]>([]);
   const [selectedWorkOrder, setSelectedWorkOrder] =
     useState<IWorkOrders | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const hasDataTotal = dataTotal?.length !== 0;
+  const itemsPerPage = 4;
+  const start = (currentPage - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+  const hasNewWorkOrderData = newWorkOrderData && newWorkOrderData.length > 0;
+  const paginationTotal = hasNewWorkOrderData
+    ? newWorkOrderData.length
+    : dataWorkOrder?.data.length;
 
-  const showCheckListModal = (workOrder: IWorkOrders) => {
-    setSelectedWorkOrder(workOrder);
-    setIsCheckListOpen(true);
-  };
-
-  const handleCheckList = () => {
-    setSelectedWorkOrder(null);
-    setIsCheckListOpen(false);
-  };
-
-  const showAssignedModal = (workOrder: IWorkOrders) => {
-    setSelectedWorkOrder(workOrder);
-    setIsAssignedOpen(true);
-  };
-
-  const handleAssigned = () => {
-    setSelectedWorkOrder(null);
-    setIsAssignedOpen(false);
-  };
-
-  const showFormModal = (workOrder: IWorkOrders | null) => {
-    setSelectedWorkOrder(workOrder);
-    setIsFormOpen(!isFormOpen);
-  };
-
-  const handleForm = () => {
-    setIsFormOpen(false);
-    setSelectedWorkOrder(null);
+  const dataList = hasNewWorkOrderData
+    ? newWorkOrderData
+        .map((item, index) => ({
+          ...item,
+          key: index,
+        }))
+        .slice(start, end)
+    : dataWorkOrder?.data
+        .map((item, index) => ({
+          ...item,
+          key: index,
+        }))
+        .slice(start, end);
+  const pagination = {
+    current: currentPage,
+    pageSize: itemsPerPage,
+    total: paginationTotal,
+    onChange: (page: number) => setCurrentPage(page),
   };
 
   const handlePriority = (priority: string) => {
@@ -107,25 +125,54 @@ export const WorkOrders = (): JSX.Element => {
           </Button>
           <Button onClick={() => showAssignedModal(workOrder)}>Assigned</Button>
           <Button onClick={() => showFormModal(workOrder)}>Edit</Button>
-          <Button
-            onClick={() => {
-              mutateRemoveWorkOrder({ id: workOrder.id });
-            }}
+          <Popconfirm
+            title="Delete the workOrder"
+            description="Are you sure to delete this workOrder?"
+            onConfirm={() => confirm(workOrder)}
+            okText="Yes"
+            cancelText="No"
+            placement="left"
           >
-            Delete
-          </Button>
+            <Button>Delete</Button>
+          </Popconfirm>
         </Space>
       ),
     },
   ];
 
+  function removeItemById(
+    arr: IWorkOrders[],
+    variables: DeleteWorkOrder
+  ): IWorkOrders[] {
+    return arr.filter((item) => item.id !== variables.id);
+  }
+
+  function updateItemById(
+    arr: IWorkOrders[],
+    item: IWorkOrders
+  ): IWorkOrders[] {
+    const index = arr.findIndex((currentItem) => currentItem.id === item.id);
+    if (index !== -1) {
+      const newArray = [...arr];
+      newArray[index] = item;
+      return newArray;
+    }
+    return arr;
+  }
+
   const { mutate: mutateAddWorkOrder } = useMutation(
     ({ body }: CreateWorkOrder) => addWorkOrder({ body }),
     {
       onSuccess: (data, variables) => {
-        if (!hasDataTotal)
-          setDataTotal([...(dataWorkOrders?.data ?? []), data.data]);
-        else setDataTotal([...dataTotal, data.data]);
+        if (!hasNewWorkOrderData)
+          setData([...(dataWorkOrder?.data ?? []), data.data]);
+        else {
+          const newId =
+            Math.max(...newWorkOrderData.map((item) => item.id)) + 1;
+          const newItem = { ...data.data, id: newId };
+          setData([...newWorkOrderData, newItem]);
+        }
+        toast.success("WorkOrder added!");
       },
     }
   );
@@ -134,25 +181,32 @@ export const WorkOrders = (): JSX.Element => {
     ({ body, id }: UpdateWorkOrder) => updateWorkOrder({ body, id }),
     {
       onSuccess: (data, variables) => {
-        function updateItemById(
-          arr: IWorkOrders[],
-          item: IWorkOrders
-        ): IWorkOrders[] {
-          return arr.map((currentItem) => {
-            if (currentItem.id === item.id) {
-              return item;
-            }
-            return currentItem;
-          });
-        }
-
-        if (!hasDataTotal && dataWorkOrders) {
-          const newData = updateItemById(dataWorkOrders?.data, data.data);
-          setDataTotal(newData);
+        if (!hasNewWorkOrderData && dataWorkOrder) {
+          const newData = updateItemById(dataWorkOrder?.data, data.data);
+          setData(newData);
         } else {
-          const newData = updateItemById(dataTotal, data.data);
-          setDataTotal(newData);
+          if (newWorkOrderData) {
+            const newData = updateItemById(newWorkOrderData, data.data);
+            setData(newData);
+          }
         }
+        toast.success("WorkOrder updated!");
+      },
+      onError: (error: AxiosError, variables) => {
+        const data: IWorkOrders = {
+          title: variables.body.title,
+          id: variables.id,
+          assetId: variables.body.assetId,
+          assignedUserIds: variables.body.assignedUserIds,
+          checklist: variables.body.checklist,
+          description: variables.body.description,
+          priority: variables.body.priority,
+          status: variables.body.status,
+        };
+        if (newWorkOrderData) {
+          setData(updateItemById(newWorkOrderData, data));
+          toast.success("WorkOrder updated!");
+        } else toast.error(`${error.message}`);
       },
     }
   );
@@ -161,66 +215,113 @@ export const WorkOrders = (): JSX.Element => {
     ({ id }: DeleteWorkOrder) => deleteWorkOrder({ id }),
     {
       onSuccess: (data, variables) => {
-        function removeItemById(arr: IWorkOrders[]): IWorkOrders[] {
-          return arr.filter((item) => item.id !== variables.id);
+        if (!hasNewWorkOrderData && dataWorkOrder)
+          setData(removeItemById(dataWorkOrder?.data, variables));
+        else {
+          if (newWorkOrderData) {
+            setData(removeItemById(newWorkOrderData, variables));
+          }
         }
-
-        if (!hasDataTotal && dataWorkOrders)
-          setDataTotal(removeItemById(dataWorkOrders?.data));
-        else setDataTotal(removeItemById(dataTotal));
+        toast.success("WorkOrder deleted!");
+      },
+      onError: (error: AxiosError, variables) => {
+        if (newWorkOrderData) {
+          setData(removeItemById(newWorkOrderData, variables));
+          if (currentPage > 1) setCurrentPage(currentPage - 1);
+          toast.success("WorkOrder deleted!");
+        } else toast.error(`${error.message}`);
       },
     }
   );
 
-  const itemsPerPage = 4;
+  const showCheckListModal = (workOrder: IWorkOrders) => {
+    setSelectedWorkOrder(workOrder);
+    setIsCheckListOpen(true);
+  };
 
-  const start = (currentPage - 1) * itemsPerPage;
-  const end = start + itemsPerPage;
+  const handleCheckList = () => {
+    setSelectedWorkOrder(null);
+    setIsCheckListOpen(false);
+  };
 
+  const showAssignedModal = (workOrder: IWorkOrders) => {
+    setSelectedWorkOrder(workOrder);
+    setIsAssignedOpen(true);
+  };
+
+  const handleAssigned = () => {
+    setSelectedWorkOrder(null);
+    setIsAssignedOpen(false);
+  };
+
+  const showFormModal = (workOrder: IWorkOrders | null) => {
+    setSelectedWorkOrder(workOrder);
+    setIsFormOpen(!isFormOpen);
+  };
+
+  const handleForm = () => {
+    setIsFormOpen(false);
+    setSelectedWorkOrder(null);
+  };
+
+  const confirm = (item: IWorkOrders) => {
+    mutateRemoveWorkOrder({ id: item.id });
+  };
+
+  function renderWorkOrders() {
+    if (isError && error) {
+      return <div>Error</div>;
+    }
+    if (isLoading || isFetching || !dataWorkOrder) {
+      return <Skeleton title={false} loading={isLoading} active></Skeleton>;
+    } else {
+      return (
+        <Row>
+          <Col span={24}>
+            <Table
+              dataSource={dataList}
+              columns={columns}
+              pagination={pagination}
+              title={() => (
+                <TableTitle>
+                  <Title level={2}>Work Orders</Title>
+                  <Button onClick={() => setIsFormOpen(!isFormOpen)}>
+                    New
+                  </Button>
+                </TableTitle>
+              )}
+              scroll={{ x: "min-content" }}
+            />
+          </Col>
+        </Row>
+      );
+    }
+  }
   return (
-    <Row>
-      <Col span={24}>
-        <Table
-          dataSource={
-            hasDataTotal
-              ? dataTotal.slice(start, end)
-              : dataWorkOrders?.data.slice(start, end)
-          }
-          columns={columns}
-          pagination={{
-            current: currentPage,
-            pageSize: itemsPerPage,
-            total: hasDataTotal
-              ? dataTotal.length
-              : dataWorkOrders?.data.length,
-            onChange: (page: number) => setCurrentPage(page),
-          }}
-          title={() => <Title level={2}>Work Orders</Title>}
-          scroll={{ x: "min-content" }}
-        />
-        <CheckListModal
-          isModalOpen={isCheckListOpen}
-          handleCancel={handleCheckList}
-          handleOk={handleCheckList}
-          checkList={selectedWorkOrder?.checklist}
-        />
-        <AssignedModal
-          isModalOpen={isAssignedOpen}
-          handleCancel={handleAssigned}
-          handleOk={handleAssigned}
-          assignedUsers={selectedWorkOrder?.assignedUserIds}
-        />
-        <Button onClick={() => setIsFormOpen(!isFormOpen)}>Form</Button>
-        <FormWorkOrdersModal
-          addWorkOrder={mutateAddWorkOrder}
-          updateWorkOrder={mutateUpdateWorkOrder}
-          isModalVisible={isFormOpen}
-          selectedItem={selectedWorkOrder}
-          setIsModalVisible={() => setIsFormOpen(!isFormOpen)}
-          onCancel={handleForm}
-        />
-      </Col>
-    </Row>
+    <div>
+      {renderWorkOrders()}
+      <CheckListModal
+        isModalOpen={isCheckListOpen}
+        handleCancel={handleCheckList}
+        handleOk={handleCheckList}
+        checkList={selectedWorkOrder?.checklist}
+      />
+      <AssignedModal
+        isModalOpen={isAssignedOpen}
+        handleCancel={handleAssigned}
+        handleOk={handleAssigned}
+        assignedUsers={selectedWorkOrder?.assignedUserIds}
+      />
+      <FormWorkOrdersModal
+        addWorkOrder={mutateAddWorkOrder}
+        updateWorkOrder={mutateUpdateWorkOrder}
+        isModalVisible={isFormOpen}
+        selectedItem={selectedWorkOrder}
+        setIsModalVisible={() => setIsFormOpen(!isFormOpen)}
+        onCancel={handleForm}
+      />
+      <ToastContainer />
+    </div>
   );
 };
 

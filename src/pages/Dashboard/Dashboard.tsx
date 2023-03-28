@@ -14,7 +14,12 @@ import {
 
 const Dashboard = (): JSX.Element => {
   const { data: AssetsData } = useAssetsContext();
-  const { data: WorkOrdersData } = useWorkOrdersContext();
+  const { data: WorkOrdersData, newWorkOrderData } = useWorkOrdersContext();
+  const workOrderData =
+    newWorkOrderData && newWorkOrderData?.length > 0
+      ? newWorkOrderData
+      : WorkOrdersData?.data;
+
   const { newUnitData, data: UnitsData } = useUnitsContext();
   const unitData =
     newUnitData && newUnitData?.length > 0 ? newUnitData : UnitsData?.data;
@@ -44,12 +49,14 @@ const Dashboard = (): JSX.Element => {
           title="Total Assets"
           value={AssetsData?.data.length}
         />
-        <StatisticCard
-          data={WorkOrdersData?.data}
-          title="Total WorkOrders"
-          value={WorkOrdersData?.data.length}
-          isWorkOrders
-        />
+        {workOrderData && (
+          <StatisticCard
+            data={workOrderData}
+            title="Total WorkOrders"
+            value={workOrderData.length}
+            isWorkOrders
+          />
+        )}
         {unitData && (
           <StatisticCard
             data={unitData}
@@ -66,7 +73,7 @@ const Dashboard = (): JSX.Element => {
         </Col>
         <Col lg={8} xs={24}>
           <GraphicsCard>
-            {WorkOrdersData?.data && <PieChart data={WorkOrdersData?.data} />}
+            {workOrderData && <PieChart data={workOrderData} />}
           </GraphicsCard>
         </Col>
       </Row>

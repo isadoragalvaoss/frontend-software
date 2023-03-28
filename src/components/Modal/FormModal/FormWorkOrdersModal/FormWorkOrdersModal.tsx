@@ -1,38 +1,14 @@
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Form, Input, Modal, Select, Space } from "antd";
-import { AxiosResponse } from "axios";
 import { useEffect, useState } from "react";
-import { UseMutateFunction } from "react-query";
 import { useAssetsContext } from "../../../../contexts/AssetsContext";
 import { useUserContext } from "../../../../contexts/UserContext";
 import { IAssets } from "../../../../models/assets";
 import { IUsers } from "../../../../models/users";
-import {
-  CreateWorkOrder,
-  IWorkOrders,
-  UpdateWorkOrder,
-} from "../../../../models/workorders";
+import { WorkOrderModal } from "../../../../models/workorders";
 
 const { Option } = Select;
 
-interface ModalProps {
-  selectedItem: IWorkOrders | null;
-  addWorkOrder: UseMutateFunction<
-    AxiosResponse<any, any>,
-    unknown,
-    CreateWorkOrder,
-    unknown
-  >;
-  updateWorkOrder: UseMutateFunction<
-    AxiosResponse<any, any>,
-    unknown,
-    UpdateWorkOrder,
-    unknown
-  >;
-  setIsModalVisible: (prevState: boolean) => void;
-  onCancel: () => void;
-  isModalVisible: boolean;
-}
 export const FormWorkOrdersModal = ({
   addWorkOrder,
   selectedItem,
@@ -40,7 +16,7 @@ export const FormWorkOrdersModal = ({
   isModalVisible,
   onCancel,
   updateWorkOrder,
-}: ModalProps): JSX.Element => {
+}: WorkOrderModal): JSX.Element => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
 
@@ -48,7 +24,6 @@ export const FormWorkOrdersModal = ({
     setLoading(true);
     try {
       const values = await form.validateFields();
-      console.log(values);
       if (!selectedItem) {
         addWorkOrder({
           body: values,
@@ -92,7 +67,10 @@ export const FormWorkOrdersModal = ({
       onCancel={onCancel}
     >
       <Form form={form} layout="horizontal">
-        <Form.Item label="Asset" name="assetId">
+        <Form.Item rules={[{ required: true }]} label="Title" name="title">
+          <Input />
+        </Form.Item>
+        <Form.Item rules={[{ required: true }]} label="Asset" name="assetId">
           <Select>
             {assets?.data &&
               assets.data.data.map((item: IAssets) => (
@@ -102,7 +80,11 @@ export const FormWorkOrdersModal = ({
               ))}
           </Select>
         </Form.Item>
-        <Form.Item label="Assigned Users" name="assignedUserIds">
+        <Form.Item
+          rules={[{ required: true }]}
+          label="Assigned Users"
+          name="assignedUserIds"
+        >
           <Select mode="multiple">
             {userData &&
               userData.map((item: IUsers) => (
@@ -134,7 +116,7 @@ export const FormWorkOrdersModal = ({
                   <Form.Item
                     {...field}
                     name={[field.name, "task"]}
-                    rules={[{ required: true, message: "Missing task" }]}
+                    rules={[{ required: true, message: "'task' is required" }]}
                     style={{ margin: 0 }}
                     key={`${field.key}-task`}
                   >
@@ -157,23 +139,28 @@ export const FormWorkOrdersModal = ({
           )}
         </Form.List>
 
-        <Form.Item label="Description" name="description">
+        <Form.Item
+          rules={[{ required: true }]}
+          label="Description"
+          name="description"
+        >
           <Input.TextArea />
         </Form.Item>
-        <Form.Item label="Priority" name="priority">
+        <Form.Item
+          rules={[{ required: true }]}
+          label="Priority"
+          name="priority"
+        >
           <Select>
             <Option value="high">High</Option>
             <Option value="low">Low</Option>
           </Select>
         </Form.Item>
-        <Form.Item label="Status" name="status">
+        <Form.Item rules={[{ required: true }]} label="Status" name="status">
           <Select>
             <Option value="completed">Completed</Option>
             <Option value="in progress">In Progress</Option>
           </Select>
-        </Form.Item>
-        <Form.Item label="Title" name="title">
-          <Input />
         </Form.Item>
       </Form>
     </Modal>

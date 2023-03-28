@@ -1,4 +1,5 @@
 import { AxiosError, AxiosResponse } from "axios";
+import { UseMutateFunction } from "react-query";
 
 export interface ICheckList {
   completed: boolean;
@@ -49,4 +50,25 @@ export interface IWorkOrdersContext {
   isLoading: boolean;
   isError: boolean;
   isFetching: boolean;
+  newWorkOrderData: IWorkOrders[] | undefined;
+  setData: (data: IWorkOrders[]) => void;
+}
+
+export interface WorkOrderModal {
+  selectedItem: IWorkOrders | null;
+  addWorkOrder: UseMutateFunction<
+    AxiosResponse<any, any>,
+    unknown,
+    CreateWorkOrder,
+    unknown
+  >;
+  updateWorkOrder: UseMutateFunction<
+    AxiosResponse<any, any>,
+    unknown,
+    UpdateWorkOrder,
+    unknown
+  >;
+  setIsModalVisible: (prevState: boolean) => void;
+  onCancel: () => void;
+  isModalVisible: boolean;
 }
