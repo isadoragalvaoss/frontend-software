@@ -25,7 +25,7 @@ const Units = (): JSX.Element => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedItem, setSelectedItem] = useState<IUnits | null>(null);
 
-  const itemsPerPage = 2;
+  const itemsPerPage = 1;
   const start = (currentPage - 1) * itemsPerPage;
   const end = start + itemsPerPage;
   const hasNewUnitData = newUnitData && newUnitData.length > 0;

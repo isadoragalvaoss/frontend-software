@@ -27,14 +27,15 @@ export const StatisticCard = ({
   const getTooltip = () => {
     if ((isAsset(data) || isUnit(data)) && !isWorkOrders) {
       if (assetsAverage && isAsset(data))
-        return data.map((d) => (
-          <p>
+        return data.map((d, index) => (
+          <p key={index}>
             {d.name}: {d.healthscore}%
           </p>
         ));
-      return data.map((d) => <p>{d.name}</p>);
+      return data.map((d, index) => <p key={index}>{d.name}</p>);
     }
-    if (isWorkOrder(data)) return data.map((d) => <p>{d.title}</p>);
+    if (isWorkOrder(data))
+      return data.map((d, index) => <p key={index}>{d.title}</p>);
   };
 
   return (
