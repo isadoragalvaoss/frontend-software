@@ -1,6 +1,7 @@
-import { Modal, Timeline } from "antd";
-import { GRAY, LIGHT_GREEN } from "../../../consts/colors";
+import { Modal } from "antd";
+import { GRAY, GREEN } from "../../../consts/colors";
 import { ICheckList } from "../../../models/workorders";
+import { TimelineContent } from "./CheckListModal.styles";
 
 interface ICheckListProps {
   isModalOpen: boolean;
@@ -14,6 +15,17 @@ export const CheckListModal = ({
   handleCancel,
   checkList,
 }: ICheckListProps): JSX.Element => {
+  function createChecklistObjects() {
+    return (
+      checkList &&
+      checkList.map((item, index) => {
+        const color = item.completed ? GREEN : GRAY;
+        return { children: item.task, color, key: index };
+      })
+    );
+  }
+
+  const items = createChecklistObjects();
   return (
     <Modal
       title="CheckList"
@@ -21,17 +33,7 @@ export const CheckListModal = ({
       onOk={handleOk}
       onCancel={handleCancel}
     >
-      <Timeline mode="left" style={{ paddingTop: 15 }}>
-        {checkList &&
-          checkList.map((item, index) => (
-            <Timeline.Item
-              key={index}
-              color={item.completed ? LIGHT_GREEN : GRAY}
-            >
-              {item.task}
-            </Timeline.Item>
-          ))}
-      </Timeline>
+      <TimelineContent mode="left" items={items} />
     </Modal>
   );
 };
