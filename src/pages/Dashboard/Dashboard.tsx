@@ -15,7 +15,9 @@ import {
 const Dashboard = (): JSX.Element => {
   const { data: AssetsData } = useAssetsContext();
   const { data: WorkOrdersData } = useWorkOrdersContext();
-  const { newUnitData } = useUnitsContext();
+  const { newUnitData, data: UnitsData } = useUnitsContext();
+  const unitData =
+    newUnitData && newUnitData?.length > 0 ? newUnitData : UnitsData?.data;
 
   function healthAverage(arr: IAssets[] | undefined): number {
     let somaHealthScore = 0;
@@ -48,11 +50,11 @@ const Dashboard = (): JSX.Element => {
           value={WorkOrdersData?.data.length}
           isWorkOrders
         />
-        {newUnitData && (
+        {unitData && (
           <StatisticCard
-            data={newUnitData}
+            data={unitData}
             title="Total Units"
-            value={newUnitData.length}
+            value={unitData.length}
           />
         )}
       </StatisticCardsContainer>

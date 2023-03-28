@@ -1,6 +1,6 @@
 import { Button, Card, List, Popconfirm, Skeleton, Typography } from "antd";
 import { AxiosError } from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useMutation } from "react-query";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -28,14 +28,14 @@ const Units = (): JSX.Element => {
   const itemsPerPage = 2;
   const start = (currentPage - 1) * itemsPerPage;
   const end = start + itemsPerPage;
-  const paginationTotal = dataUnit?.data && newUnitData && newUnitData.length;
-  const dataList =
-    dataUnit?.data && newUnitData && newUnitData.slice(start, end);
+  const hasNewUnitData = newUnitData && newUnitData.length > 0;
+  const paginationTotal = hasNewUnitData
+    ? newUnitData.length
+    : dataUnit?.data.length;
 
-  useEffect(() => {
-    if (dataUnit?.data && newUnitData) setData(dataUnit.data);
-  }, [dataUnit?.data]);
-
+  const dataList = hasNewUnitData
+    ? newUnitData.slice(start, end)
+    : dataUnit?.data.slice(start, end);
   const pagination = {
     current: currentPage,
     pageSize: itemsPerPage,
@@ -61,7 +61,8 @@ const Units = (): JSX.Element => {
     ({ body }: CreateUnit) => addUnit({ body }),
     {
       onSuccess: (data, variables) => {
-        if (newUnitData) {
+        if (!hasNewUnitData) setData([...(dataUnit?.data ?? []), data.data]);
+        else {
           const newId = Math.max(...newUnitData.map((item) => item.id)) + 1;
           const newItem = { ...data.data, id: newId };
           setData([...newUnitData, newItem]);
@@ -74,10 +75,15 @@ const Units = (): JSX.Element => {
     ({ body, id }: UpdateUnit) => updateUnit({ body, id }),
     {
       onSuccess: (data, variables) => {
-        if (newUnitData) {
-          const newData = updateItemById(newUnitData, data.data);
+        if (!hasNewUnitData && dataUnit) {
+          const newData = updateItemById(dataUnit?.data, data.data);
           setData(newData);
-          toast.success("Unit updated!");
+        } else {
+          if (newUnitData) {
+            const newData = updateItemById(newUnitData, data.data);
+            setData(newData);
+            toast.success("Unit updated!");
+          }
         }
       },
       onError: (error: AxiosError, variables) => {
@@ -98,9 +104,13 @@ const Units = (): JSX.Element => {
     ({ id }: DeleteUnit) => deleteUnit({ id }),
     {
       onSuccess: (data, variables) => {
-        if (newUnitData) {
-          setData(removeItemById(newUnitData, variables));
-          toast.success("Unit deleted!");
+        if (!hasNewUnitData && dataUnit)
+          setData(removeItemById(dataUnit?.data, variables));
+        else {
+          if (newUnitData) {
+            setData(removeItemById(newUnitData, variables));
+            toast.success("Unit deleted!");
+          }
         }
       },
       onError: (error: AxiosError, variables) => {

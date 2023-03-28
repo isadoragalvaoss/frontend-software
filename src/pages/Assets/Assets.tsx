@@ -145,12 +145,14 @@ const Assets = (): JSX.Element => {
     }
   );
 
-  const { newUnitData } = useUnitsContext();
+  const { newUnitData, data: UnitsData } = useUnitsContext();
+  const unitData =
+    newUnitData && newUnitData?.length > 0 ? newUnitData : UnitsData?.data;
   function findNameById(id: number) {
-    if (newUnitData)
-      for (let i = 0; i < newUnitData.length; i++) {
-        if (newUnitData[i].id === id) {
-          return newUnitData[i].name;
+    if (unitData)
+      for (let i = 0; i < unitData.length; i++) {
+        if (unitData[i].id === id) {
+          return unitData[i].name;
         }
       }
     return null;

@@ -70,29 +70,14 @@ export const FormModal = ({
     });
   }, [form, selectedItem]);
 
-  const {
-    data: companiesData,
-    error: companiesError,
-    isLoading: companiesLoading,
-    isError: companiesIsError,
-    isFetching: companiesIsFetching,
-  } = useCompaniesContext();
-
-  function renderCompanies() {
-    if (companiesIsError && companiesError) {
-      return <div>Error</div>;
-    }
-    if (companiesLoading || companiesIsFetching || !companiesData) {
-      return <div>Loading...</div>;
-    } else {
-      return companiesData.data.map((item) => (
-        <Option value={item.id} key={item.id}>
-          {item.name}
-        </Option>
-      ));
-    }
-  }
-  const { newUnitData } = useUnitsContext();
+  const { newCompanyData, data: CompaniesData } = useCompaniesContext();
+  const companyData =
+    newCompanyData && newCompanyData?.length > 0
+      ? newCompanyData
+      : CompaniesData?.data;
+  const { newUnitData, data: UnitsData } = useUnitsContext();
+  const unitData =
+    newUnitData && newUnitData?.length > 0 ? newUnitData : UnitsData?.data;
 
   return (
     <Modal
@@ -117,12 +102,19 @@ export const FormModal = ({
           label="Company ID"
           rules={[{ required: true }]}
         >
-          {companiesData && <Select>{renderCompanies()}</Select>}
+          <Select>
+            {companyData &&
+              companyData.map((item) => (
+                <Option value={item.id} key={item.id}>
+                  {item.name}
+                </Option>
+              ))}
+          </Select>
         </Form.Item>
         <Form.Item name="unitId" label="Unit ID" rules={[{ required: true }]}>
           <Select>
-            {newUnitData &&
-              newUnitData.map((item: IUnits) => {
+            {unitData &&
+              unitData.map((item: IUnits) => {
                 return (
                   <Option value={item.id} key={item.id}>
                     {item.name}

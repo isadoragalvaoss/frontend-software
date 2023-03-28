@@ -15,7 +15,6 @@ import { useCompaniesContext } from "../../../../contexts/CompaniesContext";
 import { useUnitsContext } from "../../../../contexts/UnitsContext";
 import { useUserContext } from "../../../../contexts/UserContext";
 import { AssetModal } from "../../../../models/assets";
-import { ICompanies } from "../../../../models/companies";
 import { IUnits } from "../../../../models/units";
 import { IUsers } from "../../../../models/users";
 import {
@@ -106,8 +105,14 @@ export const FormAssetModal = ({
   }, [form, selectedItem]);
 
   const users = useUserContext();
-  const { newUnitData } = useUnitsContext();
-  const companies = useCompaniesContext();
+  const { newUnitData, data: UnitsData } = useUnitsContext();
+  const unitData =
+    newUnitData && newUnitData?.length > 0 ? newUnitData : UnitsData?.data;
+  const { newCompanyData, data: CompaniesData } = useCompaniesContext();
+  const companyData =
+    newCompanyData && newCompanyData?.length > 0
+      ? newCompanyData
+      : CompaniesData?.data;
 
   const status = [
     { name: "In Alert", id: "inAlert" },
@@ -200,8 +205,8 @@ export const FormAssetModal = ({
           </SelectItem>
           <SelectItem label="Company" name="companyId">
             <Select>
-              {companies?.data &&
-                companies.data.data.map((item: ICompanies) => (
+              {companyData &&
+                companyData.map((item) => (
                   <Option value={item.id} key={item.id}>
                     {item.name}
                   </Option>
@@ -221,8 +226,8 @@ export const FormAssetModal = ({
           </SelectItem>
           <SelectItem label="Unit" name="unitId">
             <Select>
-              {newUnitData &&
-                newUnitData.map((item: IUnits) => {
+              {unitData &&
+                unitData.map((item: IUnits) => {
                   return (
                     <Option value={item.id} key={item.id}>
                       {item.name}
