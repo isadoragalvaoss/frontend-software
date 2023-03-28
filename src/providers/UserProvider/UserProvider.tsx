@@ -1,4 +1,5 @@
 import { AxiosError, AxiosResponse } from "axios";
+import { useState } from "react";
 import { useQuery } from "react-query";
 import { getUsers } from "../../api/services/users";
 import { UserContext } from "../../contexts/UserContext";
@@ -10,8 +11,15 @@ export const UserProvider = ({ children }: any): JSX.Element => {
     AxiosError
   >("users", ({ signal }) => getUsers({ signal }));
 
+  const [newUserData, setNewUserData] = useState<IUsers[]>([]);
+  const handleSetData = (newData: IUsers[]) => {
+    setNewUserData(newData);
+  };
+
   const contextValue = {
     data,
+    setData: handleSetData,
+    newUserData: newUserData,
     error,
     isLoading,
     isError,

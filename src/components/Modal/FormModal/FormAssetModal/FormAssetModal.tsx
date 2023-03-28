@@ -104,7 +104,9 @@ export const FormAssetModal = ({
     });
   }, [form, selectedItem]);
 
-  const users = useUserContext();
+  const { newUserData, data: UsersData } = useUserContext();
+  const userData =
+    newUserData && newUserData?.length > 0 ? newUserData : UsersData?.data;
   const { newUnitData, data: UnitsData } = useUnitsContext();
   const unitData =
     newUnitData && newUnitData?.length > 0 ? newUnitData : UnitsData?.data;
@@ -195,8 +197,8 @@ export const FormAssetModal = ({
         <ContainerFlex>
           <SelectItem label="Assigned Users" name="assignedUserIds">
             <Select mode="multiple">
-              {users?.data &&
-                users.data.data.map((item: IUsers) => (
+              {userData &&
+                userData.map((item: IUsers) => (
                   <Option value={item.id} key={item.id}>
                     {item.name}
                   </Option>

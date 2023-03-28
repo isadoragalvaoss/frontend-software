@@ -1,10 +1,15 @@
-import { Button, Card, List, Skeleton, Typography } from "antd";
+import { Button, Card, List, Popconfirm, Skeleton, Typography } from "antd";
+import { AxiosError } from "axios";
 import { useState } from "react";
 import { useMutation } from "react-query";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { addUser, deleteUser, updateUser } from "../../api/services/users";
 import { useUserContext } from "../../contexts/UserContext";
 import { CreateUser, DeleteUser, IUsers, UpdateUser } from "../../models/users";
 import FormModal from "../Modal/FormModal/FormUserModal";
+import { CardTitle } from "./Users.styles";
+const { Title } = Typography;
 
 const Users = (): JSX.Element => {
   const {
@@ -13,18 +18,56 @@ const Users = (): JSX.Element => {
     isLoading,
     isError,
     isFetching,
+    newUserData,
+    setData,
   } = useUserContext();
-  const [dataTotal, setDataTotal] = useState<IUsers[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const hasDataTotal = dataTotal?.length !== 0;
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedItem, setSelectedItem] = useState<IUsers | null>(null);
+
+  const itemsPerPage = 4;
+  const start = (currentPage - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+  const hasNewUserData = newUserData && newUserData.length > 0;
+  const paginationTotal = hasNewUserData
+    ? newUserData.length
+    : dataUser?.data.length;
+
+  const dataList = hasNewUserData
+    ? newUserData.slice(start, end)
+    : dataUser?.data.slice(start, end);
+  const pagination = {
+    current: currentPage,
+    pageSize: itemsPerPage,
+    total: paginationTotal,
+    onChange: (page: number) => setCurrentPage(page),
+  };
+
+  function removeItemById(arr: IUsers[], variables: DeleteUser): IUsers[] {
+    return arr.filter((item) => item.id !== variables.id);
+  }
+
+  function updateItemById(arr: IUsers[], item: IUsers): IUsers[] {
+    const index = arr.findIndex((currentItem) => currentItem.id === item.id);
+    if (index !== -1) {
+      const newArray = [...arr];
+      newArray[index] = item;
+      return newArray;
+    }
+    return arr;
+  }
 
   const { mutate: mutateAddUser } = useMutation(
     ({ body }: CreateUser) => addUser({ body }),
     {
       onSuccess: (data, variables) => {
-        if (!hasDataTotal) setDataTotal([...(dataUser?.data ?? []), data.data]);
-        else setDataTotal([...dataTotal, data.data]);
+        if (!hasNewUserData) setData([...(dataUser?.data ?? []), data.data]);
+        else {
+          const newId = Math.max(...newUserData.map((item) => item.id)) + 1;
+          const newItem = { ...data.data, id: newId };
+          setData([...newUserData, newItem]);
+        }
+        toast.success("User added!");
       },
     }
   );
@@ -33,22 +76,29 @@ const Users = (): JSX.Element => {
     ({ body, id }: UpdateUser) => updateUser({ body, id }),
     {
       onSuccess: (data, variables) => {
-        function updateItemById(arr: IUsers[], item: IUsers): IUsers[] {
-          return arr.map((currentItem) => {
-            if (currentItem.id === item.id) {
-              return item;
-            }
-            return currentItem;
-          });
-        }
-
-        if (!hasDataTotal && dataUser) {
+        if (!hasNewUserData && dataUser) {
           const newData = updateItemById(dataUser?.data, data.data);
-          setDataTotal(newData);
+          setData(newData);
         } else {
-          const newData = updateItemById(dataTotal, data.data);
-          setDataTotal(newData);
+          if (newUserData) {
+            const newData = updateItemById(newUserData, data.data);
+            setData(newData);
+          }
         }
+        toast.success("User updated!");
+      },
+      onError: (error: AxiosError, variables) => {
+        const data: IUsers = {
+          name: variables.body.name,
+          id: variables.id,
+          companyId: variables.body.companyId,
+          email: variables.body.email,
+          unitId: variables.body.unitId,
+        };
+        if (newUserData) {
+          setData(updateItemById(newUserData, data));
+          toast.success("User updated!");
+        } else toast.error(`${error.message}`);
       },
     }
   );
@@ -57,25 +107,39 @@ const Users = (): JSX.Element => {
     ({ id }: DeleteUser) => deleteUser({ id }),
     {
       onSuccess: (data, variables) => {
-        function removeItemById(arr: IUsers[]): IUsers[] {
-          return arr.filter((item) => item.id !== variables.id);
+        if (!hasNewUserData && dataUser)
+          setData(removeItemById(dataUser?.data, variables));
+        else {
+          if (newUserData) {
+            setData(removeItemById(newUserData, variables));
+          }
         }
-
-        if (!hasDataTotal && dataUser)
-          setDataTotal(removeItemById(dataUser?.data));
-        else setDataTotal(removeItemById(dataTotal));
+        toast.success("User deleted!");
+      },
+      onError: (error: AxiosError, variables) => {
+        if (newUserData) {
+          setData(removeItemById(newUserData, variables));
+          if (currentPage > 1) setCurrentPage(currentPage - 1);
+          toast.success("User deleted!");
+        } else toast.error(`${error.message}`);
       },
     }
   );
 
-  const itemsPerPage = 4;
+  const showModal = (item: IUsers | null) => {
+    setSelectedItem(item ?? null);
+    setIsModalVisible(true);
+  };
 
-  const start = (currentPage - 1) * itemsPerPage;
-  const end = start + itemsPerPage;
+  const hideModal = () => {
+    setIsModalVisible(false);
+    setSelectedItem(null);
+  };
 
-  const [selectedItem, setSelectedItem] = useState<IUsers | null>(null);
+  const confirm = (item: IUsers) => {
+    mutateRemoveUser({ id: item.id });
+  };
 
-  const { Title } = Typography;
   function renderUsers() {
     if (isError && error) {
       return <div>Error</div>;
@@ -84,65 +148,41 @@ const Users = (): JSX.Element => {
       return <Skeleton title={false} loading={isLoading} active></Skeleton>;
     } else {
       return (
-        <div>
-          <Card
-            title={
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-around",
-                }}
+        <Card
+          title={
+            <CardTitle>
+              <Title level={3}>Users</Title>
+              <Button onClick={() => showModal(null)}>New User</Button>
+            </CardTitle>
+          }
+        >
+          <List
+            className="demo-loadmore-list"
+            itemLayout="horizontal"
+            dataSource={dataList}
+            pagination={pagination}
+            style={{ overflow: "auto" }}
+            renderItem={(item: IUsers) => (
+              <List.Item
+                actions={[
+                  <Button onClick={() => showModal(item)}>Edit</Button>,
+                  <Popconfirm
+                    title="Delete the user"
+                    description="Are you sure to delete this user?"
+                    onConfirm={() => confirm(item)}
+                    okText="Yes"
+                    cancelText="No"
+                    placement="left"
+                  >
+                    <Button>Delete</Button>
+                  </Popconfirm>,
+                ]}
               >
-                <Title level={3}>Users</Title>
-                <Button
-                  onClick={() => {
-                    setSelectedItem(null);
-                    setIsModalVisible(true);
-                  }}
-                >
-                  New User
-                </Button>
-              </div>
-            }
-          >
-            <List
-              className="demo-loadmore-list"
-              itemLayout="horizontal"
-              dataSource={
-                hasDataTotal
-                  ? dataTotal.slice(start, end)
-                  : dataUser?.data.slice(start, end)
-              }
-              pagination={{
-                current: currentPage,
-                pageSize: itemsPerPage,
-                total: hasDataTotal ? dataTotal.length : dataUser?.data.length,
-                onChange: (page: number) => setCurrentPage(page),
-              }}
-              style={{ overflow: "auto" }}
-              renderItem={(item: IUsers) => (
-                <List.Item
-                  actions={[
-                    <Button
-                      onClick={() => {
-                        setSelectedItem(item);
-                        setIsModalVisible(true);
-                      }}
-                    >
-                      Edit
-                    </Button>,
-                    <Button onClick={() => mutateRemoveUser({ id: item.id })}>
-                      Delete
-                    </Button>,
-                  ]}
-                >
-                  <List.Item.Meta title={item.name} description={item.email} />
-                </List.Item>
-              )}
-            />
-          </Card>
-        </div>
+                <List.Item.Meta title={item.name} description={item.email} />
+              </List.Item>
+            )}
+          />
+        </Card>
       );
     }
   }
@@ -156,11 +196,9 @@ const Users = (): JSX.Element => {
         isModalVisible={isModalVisible}
         selectedItem={selectedItem}
         setIsModalVisible={() => setIsModalVisible(!isModalVisible)}
-        onCancel={() => {
-          setIsModalVisible(false);
-          setSelectedItem(null);
-        }}
+        onCancel={hideModal}
       />
+      <ToastContainer />
     </div>
   );
 };

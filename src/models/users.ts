@@ -9,10 +9,10 @@ export interface IUsers {
 }
 
 export interface User {
-  companyId: number | null;
-  email: string | null;
+  companyId: number;
+  email: string;
   name: string;
-  unitId: number | null;
+  unitId: number;
 }
 
 export interface GetUser {
@@ -39,4 +39,6 @@ export interface IUsersContext {
   isLoading: boolean;
   isError: boolean;
   isFetching: boolean;
+  newUserData: IUsers[] | undefined;
+  setData: (data: IUsers[]) => void;
 }

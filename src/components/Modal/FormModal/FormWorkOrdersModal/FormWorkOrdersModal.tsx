@@ -81,8 +81,9 @@ export const FormWorkOrdersModal = ({
   }, [form, selectedItem]);
 
   const assets = useAssetsContext();
-  const users = useUserContext();
-
+  const { newUserData, data: UsersData } = useUserContext();
+  const userData =
+    newUserData && newUserData?.length > 0 ? newUserData : UsersData?.data;
   return (
     <Modal
       open={isModalVisible}
@@ -103,8 +104,8 @@ export const FormWorkOrdersModal = ({
         </Form.Item>
         <Form.Item label="Assigned Users" name="assignedUserIds">
           <Select mode="multiple">
-            {users?.data &&
-              users.data.data.map((item: IUsers) => (
+            {userData &&
+              userData.map((item: IUsers) => (
                 <Option value={item.id} key={item.id}>
                   {item.name}
                 </Option>
