@@ -16,9 +16,7 @@ export const UnitsProvider = ({ children }: any): JSX.Element => {
     getUnits({ signal })
   );
 
-  const [newUnitData, setNewUnitData] = useState<IUnits[] | undefined>(
-    unitData?.data
-  );
+  const [newUnitData, setNewUnitData] = useState<IUnits[]>([]);
   const handleSetData = (newData: IUnits[]) => {
     setNewUnitData(newData);
   };

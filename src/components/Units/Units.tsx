@@ -1,6 +1,6 @@
 import { Button, Card, List, Popconfirm, Skeleton, Typography } from "antd";
 import { AxiosError } from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation } from "react-query";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -28,8 +28,13 @@ const Units = (): JSX.Element => {
   const itemsPerPage = 2;
   const start = (currentPage - 1) * itemsPerPage;
   const end = start + itemsPerPage;
-  const paginationTotal = newUnitData && newUnitData.length;
-  const dataList = newUnitData && newUnitData.slice(start, end);
+  const paginationTotal = dataUnit?.data && newUnitData && newUnitData.length;
+  const dataList =
+    dataUnit?.data && newUnitData && newUnitData.slice(start, end);
+
+  useEffect(() => {
+    if (dataUnit?.data && newUnitData) setData(dataUnit.data);
+  }, [dataUnit?.data]);
 
   const pagination = {
     current: currentPage,
@@ -101,7 +106,7 @@ const Units = (): JSX.Element => {
       onError: (error: AxiosError, variables) => {
         if (newUnitData) {
           setData(removeItemById(newUnitData, variables));
-          setCurrentPage(currentPage - 1);
+          if (currentPage > 1) setCurrentPage(currentPage - 1);
           toast.success("Unit deleted!");
         } else toast.error(`${error.message}`);
       },
