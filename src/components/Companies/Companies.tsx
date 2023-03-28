@@ -3,6 +3,7 @@ import { AxiosError } from "axios";
 import { useState } from "react";
 import { useMutation } from "react-query";
 import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   addCompany,
   deleteCompany,
@@ -77,8 +78,8 @@ const Companies = (): JSX.Element => {
           const newId = Math.max(...newCompanyData.map((item) => item.id)) + 1;
           const newItem = { ...data.data, id: newId };
           setData([...newCompanyData, newItem]);
-          toast.success("Company added!");
         }
+        toast.success("Company added!");
       },
     }
   );
@@ -94,9 +95,9 @@ const Companies = (): JSX.Element => {
           if (newCompanyData) {
             const newData = updateItemById(newCompanyData, data.data);
             setData(newData);
-            toast.success("Company updated!");
           }
         }
+        toast.success("Company updated!");
       },
       onError: (error: AxiosError, variables) => {
         const data: ICompanies = {
@@ -111,7 +112,7 @@ const Companies = (): JSX.Element => {
     }
   );
 
-  const { mutate: mutateRemoveUser } = useMutation(
+  const { mutate: mutateRemoveCompany } = useMutation(
     ({ id }: DeleteCompany) => deleteCompany({ id }),
     {
       onSuccess: (data, variables) => {
@@ -120,9 +121,9 @@ const Companies = (): JSX.Element => {
         else {
           if (newCompanyData) {
             setData(removeItemById(newCompanyData, variables));
-            toast.success("Company deleted!");
           }
         }
+        toast.success("Company deleted!");
       },
       onError: (error: AxiosError, variables) => {
         if (newCompanyData) {
@@ -145,7 +146,7 @@ const Companies = (): JSX.Element => {
   };
 
   const confirm = (item: ICompanies) => {
-    mutateRemoveUser({ id: item.id });
+    mutateRemoveCompany({ id: item.id });
   };
 
   function renderCompanies() {
@@ -175,14 +176,15 @@ const Companies = (): JSX.Element => {
                 actions={[
                   <Button onClick={() => showModal(item)}>Edit</Button>,
                   <Popconfirm
-                    title="Delete the unit"
-                    description="Are you sure to delete this unit?"
+                    title="Delete the company"
+                    description="Are you sure to delete this company?"
                     onConfirm={() => confirm(item)}
                     okText="Yes"
                     cancelText="No"
                     placement="left"
+                    disabled={item.id === 1}
                   >
-                    <Button disabled={item.id == 1}>Delete</Button>
+                    <Button disabled={item.id === 1}>Delete</Button>
                   </Popconfirm>,
                 ]}
               >

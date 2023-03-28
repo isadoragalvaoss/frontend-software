@@ -66,8 +66,8 @@ const Units = (): JSX.Element => {
           const newId = Math.max(...newUnitData.map((item) => item.id)) + 1;
           const newItem = { ...data.data, id: newId };
           setData([...newUnitData, newItem]);
-          toast.success("Unit added!");
         }
+        toast.success("Unit added!");
       },
     }
   );
@@ -82,9 +82,9 @@ const Units = (): JSX.Element => {
           if (newUnitData) {
             const newData = updateItemById(newUnitData, data.data);
             setData(newData);
-            toast.success("Unit updated!");
           }
         }
+        toast.success("Unit updated!");
       },
       onError: (error: AxiosError, variables) => {
         const data: IUnits = {
@@ -100,7 +100,7 @@ const Units = (): JSX.Element => {
     }
   );
 
-  const { mutate: mutateRemoveUser } = useMutation(
+  const { mutate: mutateRemoveUnit } = useMutation(
     ({ id }: DeleteUnit) => deleteUnit({ id }),
     {
       onSuccess: (data, variables) => {
@@ -109,9 +109,9 @@ const Units = (): JSX.Element => {
         else {
           if (newUnitData) {
             setData(removeItemById(newUnitData, variables));
-            toast.success("Unit deleted!");
           }
         }
+        toast.success("Unit deleted!");
       },
       onError: (error: AxiosError, variables) => {
         if (newUnitData) {
@@ -133,7 +133,7 @@ const Units = (): JSX.Element => {
   };
 
   const confirm = (item: IUnits) => {
-    mutateRemoveUser({ id: item.id });
+    mutateRemoveUnit({ id: item.id });
   };
 
   function renderUnits() {
