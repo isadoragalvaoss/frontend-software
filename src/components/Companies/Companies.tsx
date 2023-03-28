@@ -1,6 +1,8 @@
-import { Button, Card, List, Skeleton, Typography } from "antd";
+import { Button, Card, List, Popconfirm, Skeleton, Typography } from "antd";
+import { AxiosError } from "axios";
 import { useState } from "react";
 import { useMutation } from "react-query";
+import { toast, ToastContainer } from "react-toastify";
 import {
   addCompany,
   deleteCompany,
@@ -19,38 +21,64 @@ const { Title } = Typography;
 
 const Companies = (): JSX.Element => {
   const {
-    data: dataUser,
+    data: dataCompany,
     error,
     isLoading,
     isError,
     isFetching,
+    setData,
+    newCompanyData,
   } = useCompaniesContext();
-  const [dataTotal, setDataTotal] = useState<ICompanies[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const hasDataTotal = dataTotal?.length !== 0;
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedItem, setSelectedItem] = useState<ICompanies | null>(null);
 
   const itemsPerPage = 1;
   const start = (currentPage - 1) * itemsPerPage;
   const end = start + itemsPerPage;
+  const hasNewCompanyData = newCompanyData && newCompanyData.length > 0;
+  const paginationTotal = hasNewCompanyData
+    ? newCompanyData.length
+    : dataCompany?.data.length;
 
-  const dataList = hasDataTotal
-    ? dataTotal.slice(start, end)
-    : dataUser?.data.slice(start, end);
+  const dataList = hasNewCompanyData
+    ? newCompanyData.slice(start, end)
+    : dataCompany?.data.slice(start, end);
   const pagination = {
     current: currentPage,
     pageSize: itemsPerPage,
-    total: hasDataTotal ? dataTotal.length : dataUser?.data.length,
+    total: paginationTotal,
     onChange: (page: number) => setCurrentPage(page),
   };
 
+  function removeItemById(
+    arr: ICompanies[],
+    variables: DeleteCompany
+  ): ICompanies[] {
+    return arr.filter((item) => item.id !== variables.id);
+  }
+
+  function updateItemById(arr: ICompanies[], item: ICompanies): ICompanies[] {
+    const index = arr.findIndex((currentItem) => currentItem.id === item.id);
+    if (index !== -1) {
+      const newArray = [...arr];
+      newArray[index] = item;
+      return newArray;
+    }
+    return arr;
+  }
   const { mutate: mutateAddCompany } = useMutation(
     ({ body }: CreateCompany) => addCompany({ body }),
     {
       onSuccess: (data, variables) => {
-        if (!hasDataTotal) setDataTotal([...(dataUser?.data ?? []), data.data]);
-        else setDataTotal([...dataTotal, data.data]);
+        if (!hasNewCompanyData)
+          setData([...(dataCompany?.data ?? []), data.data]);
+        else {
+          const newId = Math.max(...newCompanyData.map((item) => item.id)) + 1;
+          const newItem = { ...data.data, id: newId };
+          setData([...newCompanyData, newItem]);
+          toast.success("Company added!");
+        }
       },
     }
   );
@@ -59,25 +87,26 @@ const Companies = (): JSX.Element => {
     ({ body, id }: UpdateCompany) => updateCompany({ body, id }),
     {
       onSuccess: (data, variables) => {
-        function updateItemById(
-          arr: ICompanies[],
-          item: ICompanies
-        ): ICompanies[] {
-          return arr.map((currentItem) => {
-            if (currentItem.id === item.id) {
-              return item;
-            }
-            return currentItem;
-          });
-        }
-
-        if (!hasDataTotal && dataUser) {
-          const newData = updateItemById(dataUser?.data, data.data);
-          setDataTotal(newData);
+        if (!hasNewCompanyData && dataCompany) {
+          const newData = updateItemById(dataCompany?.data, data.data);
+          setData(newData);
         } else {
-          const newData = updateItemById(dataTotal, data.data);
-          setDataTotal(newData);
+          if (newCompanyData) {
+            const newData = updateItemById(newCompanyData, data.data);
+            setData(newData);
+            toast.success("Company updated!");
+          }
         }
+      },
+      onError: (error: AxiosError, variables) => {
+        const data: ICompanies = {
+          name: variables.body.name,
+          id: variables.id,
+        };
+        if (newCompanyData) {
+          setData(updateItemById(newCompanyData, data));
+          toast.success("Company updated!");
+        } else toast.error(`${error.message}`);
       },
     }
   );
@@ -86,13 +115,21 @@ const Companies = (): JSX.Element => {
     ({ id }: DeleteCompany) => deleteCompany({ id }),
     {
       onSuccess: (data, variables) => {
-        function removeItemById(arr: ICompanies[]): ICompanies[] {
-          return arr.filter((item) => item.id !== variables.id);
+        if (!hasNewCompanyData && dataCompany)
+          setData(removeItemById(dataCompany?.data, variables));
+        else {
+          if (newCompanyData) {
+            setData(removeItemById(newCompanyData, variables));
+            toast.success("Company deleted!");
+          }
         }
-
-        if (!hasDataTotal && dataUser)
-          setDataTotal(removeItemById(dataUser?.data));
-        else setDataTotal(removeItemById(dataTotal));
+      },
+      onError: (error: AxiosError, variables) => {
+        if (newCompanyData) {
+          setData(removeItemById(newCompanyData, variables));
+          if (currentPage > 1) setCurrentPage(currentPage - 1);
+          toast.success("Company deleted!");
+        } else toast.error(`${error.message}`);
       },
     }
   );
@@ -107,11 +144,15 @@ const Companies = (): JSX.Element => {
     setSelectedItem(null);
   };
 
+  const confirm = (item: ICompanies) => {
+    mutateRemoveUser({ id: item.id });
+  };
+
   function renderCompanies() {
     if (isError && error) {
       return <div>Error</div>;
     }
-    if (isLoading || isFetching || !dataUser) {
+    if (isLoading || isFetching || !dataCompany) {
       return <Skeleton title={false} loading={isLoading} active></Skeleton>;
     } else {
       return (
@@ -133,9 +174,16 @@ const Companies = (): JSX.Element => {
               <List.Item
                 actions={[
                   <Button onClick={() => showModal(item)}>Edit</Button>,
-                  <Button onClick={() => mutateRemoveUser({ id: item.id })}>
-                    Delete
-                  </Button>,
+                  <Popconfirm
+                    title="Delete the unit"
+                    description="Are you sure to delete this unit?"
+                    onConfirm={() => confirm(item)}
+                    okText="Yes"
+                    cancelText="No"
+                    placement="left"
+                  >
+                    <Button disabled={item.id == 1}>Delete</Button>
+                  </Popconfirm>,
                 ]}
               >
                 <List.Item.Meta title={item.name} />
@@ -158,6 +206,7 @@ const Companies = (): JSX.Element => {
         setIsModalVisible={() => setIsModalVisible(!isModalVisible)}
         onCancel={hideModal}
       />
+      <ToastContainer />
     </div>
   );
 };

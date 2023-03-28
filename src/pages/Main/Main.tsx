@@ -23,15 +23,18 @@ import {
 export const Main = (): JSX.Element => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { data: CompanyData } = useCompaniesContext();
+  const { data: CompanyData, newCompanyData } = useCompaniesContext();
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
   const { Sider } = Layout;
 
   const [menuOpen, setMenuOpen] = useState(true);
   const [selectedRoute, setSelectedRoute] = useState(location.pathname);
 
-  const hasCompanyData = CompanyData?.data;
-  const companyName = hasCompanyData && CompanyData.data[0].name;
+  const hasCompanyData =
+    newCompanyData && newCompanyData?.length > 0
+      ? newCompanyData
+      : CompanyData?.data;
+  const companyName = hasCompanyData && hasCompanyData[0].name;
   const colAvatar = menuOpen ? 6 : 24;
   const imgHeader = isMobile ? 100 : 200;
 

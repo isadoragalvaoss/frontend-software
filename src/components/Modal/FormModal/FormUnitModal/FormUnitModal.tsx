@@ -46,7 +46,11 @@ export const FormCompanyModal = ({
     });
   }, [form, selectedItem]);
 
-  const companies = useCompaniesContext();
+  const { data: CompaniesData, newCompanyData } = useCompaniesContext();
+  const companyData =
+    newCompanyData && newCompanyData?.length > 0
+      ? newCompanyData
+      : CompaniesData?.data;
 
   return (
     <Modal
@@ -65,8 +69,8 @@ export const FormCompanyModal = ({
           rules={[{ required: true }]}
         >
           <Select>
-            {companies?.data &&
-              companies.data.data.map((item: ICompanies) => (
+            {companyData &&
+              companyData.map((item: ICompanies) => (
                 <Option value={item.id} key={item.id}>
                   {item.name}
                 </Option>

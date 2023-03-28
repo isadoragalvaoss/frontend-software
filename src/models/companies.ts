@@ -34,6 +34,8 @@ export interface ICompaniesContext {
   isLoading: boolean;
   isError: boolean;
   isFetching: boolean;
+  newCompanyData: ICompanies[] | undefined;
+  setData: (data: ICompanies[]) => void;
 }
 
 export interface CompanyModal {
