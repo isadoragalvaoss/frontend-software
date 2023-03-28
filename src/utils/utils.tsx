@@ -13,6 +13,11 @@ export const selectedRoutes = (route: string) => {
   };
 
   const correctRoute = route.split("/")[1];
+
+  if (correctRoute === "") {
+    return routes["dashboard"];
+  }
+
   return (
     routes[correctRoute] ?? (
       <Result

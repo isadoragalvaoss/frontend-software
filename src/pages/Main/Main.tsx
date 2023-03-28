@@ -48,7 +48,7 @@ export const Main = (): JSX.Element => {
   };
 
   const menuItems = [
-    { name: "Dashboard", key: "/dashboard", icon: <DatabaseOutlined /> },
+    { name: "Dashboard", key: "/", icon: <DatabaseOutlined /> },
     { name: "WorkOrders", key: "/workOrders", icon: <DatabaseOutlined /> },
     { name: "Assets", key: "/assets", icon: <DatabaseOutlined /> },
     { name: "Manage", key: "/manage", icon: <SettingOutlined /> },
@@ -76,6 +76,7 @@ export const Main = (): JSX.Element => {
             handleRouteClick(key);
           }}
           onOpenChange={handleOpenMenu}
+          defaultSelectedKeys={["/"]}
         >
           {menuItems.map((item) => (
             <Menu.Item key={item.key} icon={item.icon}>
